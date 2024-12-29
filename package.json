@@ -1,0 +1,40 @@
+{
+  "name": "aish",
+  "version": "1.0.0",
+  "description": "An AI Shell. Letting an LLM Loose in a Linux Shell",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nielspeter/aish.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nielspeter/aish/issues"
+  },
+  "homepage": "https://github.com/nielspeter/aish",
+  "author": "Niels Peter Strandberg (https://github.com/nielspeter)",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint --fix",
+    "start": "node --no-warnings --watch --loader ts-node/esm src/app.ts"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@dqbd/tiktoken": "^1.0.18",
+    "@typescript-eslint/eslint-plugin": "^8.5.0",
+    "@typescript-eslint/parser": "^8.5.0",
+    "chalk": "^5.4.1",
+    "eslint": "^9.10.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "ollama": "^0.5.11",
+    "prettier": "^3.3.3",
+    "yargs": "^17.7.2"
+  }
+}

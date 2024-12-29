@@ -1,0 +1,11 @@
+services:
+    app:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      stdin_open: true
+      tty: true
+      environment:
+        - OLLAMA_HOST=http://host.docker.internal:11434
+        - OLLAMA_FLASH_ATTENTION=true
+        - OLLAMA_MODEL=qwen2.5-coder:32b
