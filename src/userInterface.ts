@@ -27,4 +27,20 @@ export class UserInterface {
     const prompt = chalk.cyan(`\n(t:${tokenCount}:${MAX_TOKENS}) user@aish `) + chalk.cyanBright('% ');
     return new Promise((resolve) => this.rl.question(prompt, resolve));
   }
+
+  // Blinking Cursor Animation
+  public async showWorkingAnimation() {
+    const frames = ['.', ' ']; // Frames for blinking
+    let frameIndex = 0;
+
+    const intervalId = setInterval(() => {
+      process.stdout.write('\r' + frames[frameIndex]);
+      frameIndex = (frameIndex + 1) % frames.length;
+    }, 500); // Adjust the blinking speed
+
+    return () => {
+      clearInterval(intervalId); // Clear the interval
+      process.stdout.write('\r'); // Clear the "Working" line
+    };
+  }
 }

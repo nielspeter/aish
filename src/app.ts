@@ -42,10 +42,15 @@ async function main() {
         const command = userInput.trim().slice(1); // Remove the '/' prefix
         messages.push({ role: 'user', content: userInput });
 
+        // Start the working animation
+        const stopAnimation = await ui.showWorkingAnimation();
+
         let continueExecution = true;
 
         while (continueExecution) {
           const chatResponse = await modelClient.getResponse(messages);
+          stopAnimation(); // Stop the animation once the response is received
+
           const messageContent: MessageContent = chatResponse.message.content
             ? JSON.parse(chatResponse.message.content)
             : {};
@@ -55,7 +60,7 @@ async function main() {
           }
 
           if (messageContent.conclusion && messageContent.conclusion.trim().length > 0) {
-            console.log('✅ ', chalk.gray(messageContent.conclusion));
+            console.log('✅ ', chalk.white(messageContent.conclusion));
           }
 
           if (messageContent.command && messageContent.command.trim().length > 0) {
