@@ -36,6 +36,8 @@ An interactive command is one that requires user input during its execution, suc
 Non-interactive commands execute without needing additional input. For example, use \`apt-get install -y package-name\` 
 instead of \`apt-get install package-name\`, which may prompt for confirmation.
 
+When creating files or supplying multi-line input with tools like echo, cat, printf, or similar, use the here-document syntax (<< 'EOF') to handle newline characters and special symbols effectively, ensuring better readability and consistency.
+
 You should not try to access online resources that require authentication, credentials or API keys.
 
 You have acces to the internet to search for information or visit URLs provided in the task description.
