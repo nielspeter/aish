@@ -33,7 +33,7 @@ export class UserInterface {
 
   // Blinking Cursor Animation
   public async showWorkingAnimation() {
-    const frames = ['⚙️', '  ']; // Frames for blinking
+    const frames = ['⚙️  ', '   ']; // Frames for blinking
     let frameIndex = 0;
 
     const intervalId = setInterval(() => {
