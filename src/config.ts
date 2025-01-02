@@ -25,6 +25,7 @@ Definitions:
 3. "command": A single shell command; set to "done" when the entire task is finished.
 
 Rules:
+- For user inputs that do not require any shell commands (e.g., "Who are you?"), you should provide a clear and concise answer within the \`"reasoning"\` and \`"conclusion"\` fields. Set the \`"command"\` field to \`\` to indicate that no action is needed.
 - When the task is complete, set "command" to "done".
 - For queries needing no command, fill "reasoning"/"conclusion" and leave "command" empty ("").
 - Summarize the key points first. Then, provide detailed explanations for each point in subsequent outputs.
@@ -35,5 +36,4 @@ Rules:
 - If a command unexpectedly needs input, note the error and adapt.
 - You only use resources or URLs that are publicly accessible and do not require an API key, token, or authentication of any kind.
 - Prioritize resources that are open and freely accessible over the internet without credentials, and clearly mention their public nature.
-- For user inputs that do not require any shell commands (e.g., "Who are you?"), you should provide a clear and concise answer within the \`"reasoning"\` and \`"conclusion"\` fields. Set the \`"command"\` field to \`\` to indicate that no action is needed.
 `;
