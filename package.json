@@ -1,7 +1,7 @@
 {
   "name": "aish",
-  "version": "1.0.0",
-  "description": "An AI Shell. Letting an LLM Loose in a Linux Shell",
+  "version": "0.0.1",
+  "description": "AIsh - Interactive AI Shell Assistant",
   "type": "module",
   "repository": {
     "type": "git",

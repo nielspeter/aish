@@ -6,6 +6,13 @@ services:
       stdin_open: true
       tty: true
       environment:
-        - OLLAMA_HOST=http://host.docker.internal:11434
-        - OLLAMA_FLASH_ATTENTION=true
-        - OLLAMA_MODEL=qwen2.5-coder:32b
+        - HOME=/mnt/root
+        #- MODEL_SERVICE_HOST=http://host.docker.internal:11434
+        #- OLLAMA_FLASH_ATTENTION=true
+        #- MODEL_NAME=qwen2.5-coder:32b
+        - MODEL_SERVICE_HOST=https://api.lambdalabs.com/v1/chat/completions
+        - MODEL_NAME=qwen25-coder-32b-instruct # or lfm-40b
+        - MODEL_SERVICE_API_KEY=<API_KEY>
+      user: root
+      volumes:
+        - "${PWD}/root:/mnt/root"

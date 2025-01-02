@@ -32,17 +32,17 @@ export class ShellManager {
    * @private
    */
   private initializeListeners() {
-    this.shell.stdout.on('data', (data: Buffer) => {
+    this.shell?.stdout?.on('data', (data: Buffer) => {
       this.buffer += data.toString();
       this.checkForEndMarker('stdout');
     });
 
-    this.shell.stderr.on('data', (data: Buffer) => {
+    this.shell?.stderr?.on('data', (data: Buffer) => {
       this.buffer += data.toString();
       this.checkForEndMarker('stderr');
     });
 
-    this.shell.on('close', (code) => {
+    this.shell?.on('close', (code) => {
       console.log(chalk.red(`\nShell process exited with code ${code}`));
       process.exit(code || 0);
     });
@@ -82,7 +82,7 @@ export class ShellManager {
    * @private
    */
   private initializePrompt() {
-    this.shell.stdin.write(SHELL_PROMPT);
+    this.shell?.stdin?.write(SHELL_PROMPT);
   }
 
   /**
@@ -119,7 +119,7 @@ export class ShellManager {
       this.outputEmitter.once('commandError', onStderr);
       this.outputEmitter.once('commandOutput', onCommandEnd);
 
-      this.shell.stdin.write(`${command}\necho ${COMMAND_END_MARKER}\n`);
+      this.shell?.stdin?.write(`${command}\necho ${COMMAND_END_MARKER}\n`);
     });
   }
 }

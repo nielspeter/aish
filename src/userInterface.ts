@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import readline from 'readline';
-import { MAX_TOKENS } from './config.js';
-import { MessageHelper } from './messageHelper';
+import { MessageHelper } from './messageHelper.js';
+import { REQUEST_MAX_TOKENS } from './config.js';
 
 /**
  * Class representing a user interface for interacting with the shell.
@@ -27,13 +27,14 @@ export class UserInterface {
    */
   public askQuestion(): Promise<string> {
     const prompt =
-      chalk.cyan(`\n(t:${this.messageHelper.calculateTokenCount()}:${MAX_TOKENS}) root@aish `) + chalk.cyanBright('% ');
+      chalk.cyan(`\n(t:${this.messageHelper.calculateTokenCount()}:${REQUEST_MAX_TOKENS}) root@aish `) +
+      chalk.cyanBright('% ');
     return new Promise((resolve) => this.rl.question(prompt, resolve));
   }
 
   // Blinking Cursor Animation
   public async showWorkingAnimation() {
-    const frames = ['⚙️  ', '   ']; // Frames for blinking
+    const frames = ['⚙️ ', '   ']; // Frames for blinking
     let frameIndex = 0;
 
     const intervalId = setInterval(() => {

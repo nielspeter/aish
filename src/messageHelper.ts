@@ -1,11 +1,11 @@
 import chalk from 'chalk';
 import fs from 'fs/promises';
 import path from 'path';
-import { MAX_TOKENS, TOKEN_MODEL, SYS_PROMPT } from './config.js';
+import { TOKEN_MODEL, SYS_PROMPT, REQUEST_MAX_TOKENS } from './config.js';
 import { Message } from 'ollama';
 import { encoding_for_model } from '@dqbd/tiktoken';
 import { homedir } from 'os';
-import { MessageContent } from './types';
+import { MessageContent } from './types.js';
 
 /**
  * Path to the hidden messages file in the user's home directory.
@@ -38,7 +38,7 @@ export class MessageHelper {
    * @param {number} [contextLimit=MAX_TOKENS] - The maximum token limit for context.
    * @returns {number} - The total number of tokens.
    */
-  calculateTokenCount(contextLimit: number = MAX_TOKENS): number {
+  calculateTokenCount(contextLimit: number = REQUEST_MAX_TOKENS): number {
     try {
       const encoding = encoding_for_model(TOKEN_MODEL);
 
@@ -62,7 +62,7 @@ export class MessageHelper {
    *
    * @param {number} maxTokens - The maximum number of tokens allowed.
    */
-  private trimMessagesToFitContext(maxTokens: number = MAX_TOKENS) {
+  private trimMessagesToFitContext(maxTokens: number = REQUEST_MAX_TOKENS) {
     // Exclude specific indices from trimming
     const excludeIndices = new Set<number>();
     if (this.messages.length > 0) {
@@ -142,20 +142,33 @@ export class MessageHelper {
     );
   }
 
-  private trimMessageContent(message: Message): void {
+  private isJsonString(content: string): boolean {
     try {
-      const parsedContent = JSON.parse(message.content);
-
-      if (this.isMessageContentType(parsedContent)) {
-        parsedContent.reasoning = this.trimStringKeepHeadAndTail(parsedContent.reasoning);
-        parsedContent.conclusion = this.trimStringKeepHeadAndTail(parsedContent.conclusion);
-        parsedContent.command = this.trimStringKeepHeadAndTail(parsedContent.command ?? '');
-        message.content = JSON.stringify(parsedContent);
-      } else {
-        message.content = this.trimStringKeepHeadAndTail(message.content);
-      }
+      JSON.parse(content);
+      return true;
     } catch {
-      message.content = this.trimStringKeepHeadAndTail(message.content);
+      return false;
     }
+  }
+
+  private trimMessageContent(message: Message): void {
+    if (this.isJsonString(message.content)) {
+      try {
+        const parsedContent = JSON.parse(message.content);
+
+        if (this.isMessageContentType(parsedContent)) {
+          parsedContent.reasoning = this.trimStringKeepHeadAndTail(parsedContent.reasoning);
+          parsedContent.conclusion = this.trimStringKeepHeadAndTail(parsedContent.conclusion);
+          parsedContent.command = this.trimStringKeepHeadAndTail(parsedContent.command ?? '');
+          message.content = JSON.stringify(parsedContent);
+          return;
+        }
+      } catch (error) {
+        console.error('trimMessageContent: JSON processing error', error.message);
+      }
+    }
+
+    // If not JSON or fails processing, treat as plain string
+    message.content = this.trimStringKeepHeadAndTail(message.content);
   }
 }
