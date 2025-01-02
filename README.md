@@ -31,7 +31,7 @@ Ask AIsh to perform tasks like counting words in a file, generating project scaf
 ### Coding Assistance
 
 Request a Rust project to fetch stock prices, and AIsh will:
-1.	Check if Rust is installed (installing it if necessary).
+1.	Check if Java is installed (installing it if necessary).
 2.	Create the project files.
 3.	Write and execute the code.
 4.	Iterate until the task is complete.
@@ -43,6 +43,13 @@ Work alongside the AI, guiding it to refine results or execute specific tasks. T
 AIsh is an experiment born from curiosity and a vision for the future. It’s a playful step toward a world where developers have tireless, adaptive assistants to tackle the tedious parts of coding while leaving the creative and strategic work to us.
 
 So, if you’re ready to explore and experiment, clone the repo, fire up Docker, and see where this journey takes you.
+
+## The Importance of a Well-Defined System Prompt
+The system prompt is fundamental to shaping the behavior of the LLM, ensuring its outputs align with expectations. Serving as the AI's "operating manual," it directs the model to respond in a structured and predictable manner. Even slight changes to the prompt can have significant consequences, causing the model to behave differently. Therefore, crafting the right prompt is a delicate task.
+
+AIsh operates within a strict JSON schema, enabling clear reasoning, concise conclusions, and precise command execution. This structure is essential for seamlessly integrating AI-driven automation into a shell environment. Since not all LLMs inherently adhere to such structured outputs, the system prompt enforces this consistency, ensuring reliability and accuracy.
+
+Developers are encouraged to experiment with the system prompt to achieve the best results for their specific use cases. Iterating on the prompt, testing different phrasing, and refining its structure can help tailor the model's behavior to better align with the desired outcomes.
 
 ## Shell Interface
 
@@ -66,16 +73,6 @@ To try AIsh, all you need is a Unix-based machine with Docker and Ollama install
 ### Security Warning
 Running AIsh outside of Docker is not recommended. When executed directly on your machine, the LLM has full access to your filesystem and can install or delete files. To mitigate this, always use the Docker Compose setup to ensure a secure and isolated environment.
 
----
-
-### Features
-1. **LLM-Driven Shell Automation**: Allows the AI to interact with your shell environment, executing commands iteratively to complete tasks.
-2. **Containerized Safety**: Uses Docker to ensure commands run in a sandboxed environment.
-3. **Configurable AI Models**: Supports both local (Ollama) and remote (Lambda Lab API) LLMs.
-4. **Dynamic Task Execution**: The AI installs dependencies, retrieves data, and runs code autonomously.
-5. **Collaborative Workflows**: You can interject and collaborate with the AI at any point during the process.
-
----
 
 ## Quick Start
 
@@ -127,44 +124,6 @@ To use a local LLM with Ollama, you need to install Ollama. You can install it e
 #### Install via Homebrew
 ```sh
 brew install ollama
-```
-
-### Example `docker-compose.yml` Configuration
-```yaml
-services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    stdin_open: true
-    tty: true
-    environment:
-      - HOME=/mnt/root
-      - MODEL_SERVICE_HOST=https://api.lambdalabs.com/v1/chat/completions
-      - MODEL_NAME=qwen25-coder-32b-instruct
-      - MODEL_SERVICE_API_KEY=<API_KEY>
-    user: root
-    volumes:
-      - "${PWD}/root:/mnt/root"
-```
-
-### Example `Dockerfile`
-```dockerfile
-# Use an official Node runtime as a parent image
-FROM node:current
-
-# Set the working directory inside the container to /opt/aish
-WORKDIR /opt/aish
-
-# Install any needed packages specified in package.json
-COPY package*.json ./
-RUN npm install
-
-# Bundle app source inside Docker image
-COPY . .
-
-# Run your application
-CMD ["npm", "start"]
 ```
 
 ### License
