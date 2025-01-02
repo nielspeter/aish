@@ -1,5 +1,5 @@
 import { ChatResponse, Message, Ollama } from 'ollama';
-import { MODEL_SERVICE_HOST, MODEL_NAME, RESPONSE_MAX_TOKENS } from '../config.js';
+import { MODEL_NAME, RESPONSE_MAX_TOKENS } from '../config.js';
 
 /**
  * Class representing a client for interacting with the Ollama model.

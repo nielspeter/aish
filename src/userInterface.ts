@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import readline from 'readline';
 import { MessageHelper } from './messageHelper.js';
-import { RESPONSE_MAX_TOKENS } from './config.js';
+import { REQUEST_MAX_TOKENS } from './config.js';
 
 /**
  * Class representing a user interface for interacting with the shell.
@@ -27,7 +27,7 @@ export class UserInterface {
    */
   public askQuestion(): Promise<string> {
     const prompt =
-      chalk.cyan(`\n(t:${this.messageHelper.calculateTokenCount()}:${RESPONSE_MAX_TOKENS}) root@aish `) +
+      chalk.cyan(`\n(t:${this.messageHelper.calculateTokenCount()}:${REQUEST_MAX_TOKENS}) root@aish `) +
       chalk.cyanBright('% ');
     return new Promise((resolve) => this.rl.question(prompt, resolve));
   }
