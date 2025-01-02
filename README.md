@@ -59,7 +59,7 @@ The LLM remembers the history of commands and interactions. This history is stor
 To try AIsh, all you need is a Unix-based machine with Docker and Ollama installed. The project uses Node.js and TypeScript, making it straightforward to extend or modify.
 
 ### Prerequisites
-- **Node.js** (version 21 or later)
+- **Node.js** (version 22 or later)
 - **Docker** and **Docker Compose**
 - **Ollama** (for local LLMs) or a **Lambda Lab API account**
 
