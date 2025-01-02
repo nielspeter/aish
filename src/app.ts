@@ -1,10 +1,11 @@
 import chalk from 'chalk';
-import { MessageContent } from './types.js';
+import { LambdaLabModelClient } from './clients/lambdaLabModelClient.js';
+import { MODEL_SERVICE_API_KEY, MODEL_SERVICE_HOST } from './config.js';
 import { MessageHelper } from './messageHelper.js';
-import { ModelClient } from './modelClient.js';
 import { ShellManager } from './shellManager.js';
 import { UserInterface } from './userInterface.js';
 import { homedir } from 'os';
+import { toMessageContent } from './contentHelper.js';
 
 /**
  * Main function to run the AIsh shell assistant.
@@ -16,7 +17,7 @@ async function main() {
   const messageHelper = new MessageHelper();
   const ui = new UserInterface(messageHelper);
   const shellManager = new ShellManager();
-  const modelClient = new ModelClient();
+  const modelClient = new LambdaLabModelClient(MODEL_SERVICE_HOST, MODEL_SERVICE_API_KEY);
   await messageHelper.init();
 
   console.log(chalk.greenBright('Welcome to AIsh 🤖 - your intelligent, interactive AI shell assistant!\n'));
@@ -47,12 +48,21 @@ async function main() {
         let continueExecution = true;
 
         while (continueExecution) {
-          const chatResponse = await modelClient.getResponse(messageHelper.messages);
+          const chatResponse = await modelClient.chat(messageHelper.messages);
           stopAnimation(); // Stop the animation once the response is received
 
-          const messageContent: MessageContent = chatResponse.message.content
-            ? JSON.parse(chatResponse.message.content)
-            : {};
+          // Ollama Model
+          // const messageContent: MessageContent = chatResponse.message.content
+          //   ? JSON.parse(chatResponse.message.content)
+          //   : {};
+
+          // Lambda Lab Model
+          const messageContent = toMessageContent(chatResponse.choices[0].message.content ?? '');
+
+          if (!messageContent?.reasoning && !messageContent?.conclusion) {
+            console.error(chalk.red('Invalid response from the model.'));
+            continue;
+          }
 
           await messageHelper.addToHistory({
             role: 'assistant',

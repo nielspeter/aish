@@ -1,14 +1,14 @@
 import { ChatResponse, Message, Ollama } from 'ollama';
-import { MAX_TOKENS, OLLAMA_HOST, OLLAMA_MODEL } from './config.js';
+import { MODEL_SERVICE_HOST, MODEL_NAME, RESPONSE_MAX_TOKENS } from '../config.js';
 
 /**
  * Class representing a client for interacting with the Ollama model.
  */
-export class ModelClient {
+export class OllamaModelClient {
   private readonly ollama: Ollama;
 
-  constructor() {
-    this.ollama = new Ollama({ host: OLLAMA_HOST });
+  constructor(MODEL_SERVICE_HOST: string) {
+    this.ollama = new Ollama({ host: MODEL_SERVICE_HOST });
   }
 
   /**
@@ -16,9 +16,9 @@ export class ModelClient {
    * @param {Message[]} messages - The messages to send to the model.
    * @returns {Promise<ChatResponse>} The model's response.
    */
-  public async getResponse(messages: Message[]): Promise<ChatResponse> {
+  public async chat(messages: Message[]): Promise<ChatResponse> {
     return await this.ollama.chat({
-      model: OLLAMA_MODEL,
+      model: MODEL_NAME,
       messages,
       format: {
         type: 'object',
@@ -31,7 +31,7 @@ export class ModelClient {
       },
       options: {
         temperature: 0.2,
-        num_ctx: MAX_TOKENS,
+        num_ctx: RESPONSE_MAX_TOKENS,
       },
     });
   }
@@ -51,7 +51,7 @@ export class ModelClient {
     };
 
     const summaryResponse = await this.ollama.chat({
-      model: OLLAMA_MODEL,
+      model: MODEL_NAME,
       messages: [summaryPrompt],
       format: {
         type: 'string',
