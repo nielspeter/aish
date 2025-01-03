@@ -43,11 +43,11 @@ Work alongside the AI, guiding it to refine results or execute specific tasks. T
 
 AIsh creates a Python script to calculate an arithmetic sequence and executes it. Create the same script in TypeScript, install Deno, and run it.
 
-https://github.com/user-attachments/assets/3e976ff8-ebcd-48d4-a7ca-0d7d4fb4e6ff
+https://github.com/user-attachments/assets/c93d55dc-de9c-45f2-851c-455445e0837e
 
 AIsh checks out the code from GitHub and counts the number of TypeScript files in the repository
 
-https://github.com/user-attachments/assets/4787fad2-d199-4f71-9320-ab1ef6385a4c
+https://github.com/user-attachments/assets/26de71e2-ca18-43e1-b058-4802e33d31e2
 
 AIsh connects to a remote database and lists all orders that have been shipped.
 
