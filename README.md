@@ -41,11 +41,11 @@ Work alongside the AI, guiding it to refine results or execute specific tasks. T
 
 ### Screen Capture Examples of AIsh in Action
 
-Example: AIsh created a Python script to calculate an arithmetic sequence and executed it. Create the same script in TypeScript, install Deno, and run it.
+AIsh creates a Python script to calculate an arithmetic sequence and executes it. Create the same script in TypeScript, install Deno, and run it.
 
 https://github.com/user-attachments/assets/3e976ff8-ebcd-48d4-a7ca-0d7d4fb4e6ff
 
-Example: AIsh checked out the code from GitHub and counted the number of TypeScript files in the repository.
+AIsh checks out the code from GitHub and counts the number of TypeScript files in the repository
 
 https://github.com/user-attachments/assets/4787fad2-d199-4f71-9320-ab1ef6385a4c
 
