@@ -78,7 +78,7 @@ The shell interface in AIsh allows you to execute shell commands as you normally
 The LLM remembers the history of commands and interactions. This history is stored in a hidden file in the user's home directory called `.aish_messages.json`. This allows the LLM to maintain context and provide more accurate responses based on past interactions.
 
 ## Getting Started
-To try AIsh, all you need is a Unix-based machine with Docker and Ollama installed. The project uses Node.js and TypeScript, making it straightforward to extend or modify.
+To try AIsh, you’ll need a machine with Docker and Ollama installed. If your machine isn’t powerful enough to run the model locally, you can opt to use the Lambda Lab API instead. The project is built with Node.js and TypeScript, making it easy to extend and modify.
 
 ### Prerequisites
 - **Node.js** (version 22 or later for development)
