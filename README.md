@@ -49,6 +49,10 @@ AIsh checks out the code from GitHub and counts the number of TypeScript files i
 
 https://github.com/user-attachments/assets/4787fad2-d199-4f71-9320-ab1ef6385a4c
 
+AIsh connects to a remote database and lists all orders that have been shipped.
+
+https://github.com/user-attachments/assets/6615d25e-1190-4d20-a4c3-049af0678306
+
 
 ### A Developer’s Experiment
 AIsh is an experiment born from curiosity and a vision for the future. It’s a playful step toward a world where developers have tireless, adaptive assistants to tackle the tedious parts of coding while leaving the creative and strategic work to us.
