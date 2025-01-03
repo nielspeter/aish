@@ -97,15 +97,9 @@ Running AIsh outside of Docker is not recommended. When executed directly on you
 This builds and runs the Docker container, attaching you to an AI-driven shell environment.
    
 #### Using npm (Development)
-2. **Run the application:**
+1. **Run the application:**
    ```sh
    npm run start
-   ```
-
-#### Using Docker Compose (Recommended for Security)
-1. **Build and start the container:**
-   ```sh
-   ./aish.sh
    ```
 
 ### Configuration
