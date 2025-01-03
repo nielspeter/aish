@@ -39,7 +39,7 @@ Request a Java project to fetch stock prices, and AIsh will:
 ### Real-Time Collaboration
 Work alongside the AI, guiding it to refine results or execute specific tasks. The AI maintains a history of actions, providing context for iterative improvements.
 
-### Screen Capture Examples of AI in Action
+### Screen Capture Examples of AIsh in Action
 
 Example: AIsh created a Python script to calculate an arithmetic sequence and executed it. Create the same script in TypeScript, install Deno, and run it.
 
