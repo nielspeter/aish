@@ -15,8 +15,6 @@ AIsh creates an interactive shell environment where an LLM can:
 - Retrieve and interact with real-time data from APIs and the internet.
 - Collaborate with the user, blending AI-driven automation with human guidance.
 
-Using the power of containerization via Docker, AIsh ensures a safe sandboxed environment where the AI can operate without compromising your system.
-
 ## The Vision
 AIsh demonstrates a glimpse into the future of development: a world where developers have personal AI programming assistants that:
 - Understand and execute tasks iteratively.
@@ -32,7 +30,7 @@ Ask AIsh to perform tasks like counting words in a file, generating project scaf
 
 ### Coding Assistance
 
-Request a Rust project to fetch stock prices, and AIsh will:
+Request a Java project to fetch stock prices, and AIsh will:
 1.	Check if Java is installed (installing it if necessary).
 2.	Create the project files.
 3.	Write and execute the code.
@@ -68,7 +66,7 @@ The LLM remembers the history of commands and interactions. This history is stor
 To try AIsh, all you need is a Unix-based machine with Docker and Ollama installed. The project uses Node.js and TypeScript, making it straightforward to extend or modify.
 
 ### Prerequisites
-- **Node.js** (version 22 or later)
+- **Node.js** (version 22 or later for development)
 - **Docker** and **Docker Compose**
 - **Ollama** (for local LLMs) or a **Lambda Lab API account**
 
@@ -84,11 +82,6 @@ Running AIsh outside of Docker is not recommended. When executed directly on you
    git clone git@github.com:nielspeter/aish.git
    cd aish
     ```
-
-1. **Install dependencies:**
-   ```sh
-   npm install
-   ```
 
 1. Run the startup script:
    ```sh
