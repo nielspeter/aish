@@ -1,5 +1,7 @@
 # AIsh - Interactive AI Shell Assistant
 
+<img width="890" alt="example" src="https://github.com/user-attachments/assets/88ed9233-5e45-4f37-89a9-e6625d91945f" />
+
 ## Introduction
 **AIsh** is an experimental project that explores the potential of combining the power of Large Language Models (LLMs) with the versatility of a shell environment. This is not a finished product—it's a proof of concept for developers curious about what happens when you give an AI direct access to a runtime environment.
 
