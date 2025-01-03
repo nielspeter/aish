@@ -92,19 +92,24 @@ Running AIsh outside of Docker is not recommended. When executed directly on you
 ## Quick Start
 
 ### Using Docker Compose (Recommended)
-1. Clone the repository:
+1. **Clone the repository:**
    ```sh
    git clone git@github.com:nielspeter/aish.git
    cd aish
     ```
 
-1. Run the startup script:
+1. **Run the startup script:**
    ```sh
    ./aish.sh
    ```
 This builds and runs the Docker container, attaching you to an AI-driven shell environment.
    
 #### Using npm (Development)
+1. **Install dependencies:**
+   ```sh
+   npm install
+   ```
+
 1. **Run the application:**
    ```sh
    npm run start
