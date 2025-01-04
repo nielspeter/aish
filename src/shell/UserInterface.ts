@@ -1,7 +1,9 @@
-import chalk from 'chalk';
 import readline from 'readline';
-import { HistoryManager } from '../managers/HistoryManager.js';
-import { HISTORY_MAX_TOKENS } from '../config.js';
+
+import chalk from 'chalk';
+
+import { HistoryManager } from '../history/HistoryManager.js';
+import { HISTORY_MAX_TOKENS } from '../utils/config.js';
 
 /**
  * Class representing a user interface for interacting with the shell.

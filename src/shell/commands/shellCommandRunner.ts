@@ -1,7 +1,15 @@
 import chalk from 'chalk';
-import { HistoryManager } from '../managers/HistoryManager.js';
-import { ShellManager } from '../managers/ShellManager.js';
 
+import { HistoryManager } from '../../history/HistoryManager.js';
+import { ShellManager } from '../ShellManager.js';
+
+/**
+ * Handles User-based commands in a loop.
+ *
+ * @param userInput The command to run
+ * @param historyManager The conversation history manager
+ * @param shellManager The shell manager
+ */
 export async function runShellCommand(userInput: string, historyManager: HistoryManager, shellManager: ShellManager) {
   const command = userInput.trim();
 

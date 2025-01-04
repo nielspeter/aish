@@ -1,7 +1,9 @@
-import chalk from 'chalk';
-import { COMMAND_END_MARKER, SHELL_PROMPT } from '../config.js';
 import { ChildProcess, spawn } from 'child_process';
 import { EventEmitter } from 'events';
+
+import chalk from 'chalk';
+
+import { COMMAND_END_MARKER, SHELL_PROMPT } from '../utils/config.js';
 
 export class ShellManager {
   private readonly shell: ChildProcess;

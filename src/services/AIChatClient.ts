@@ -3,10 +3,11 @@ import {
   ChatCompletion,
   ChatCompletionCreateParams,
   ChatCompletionMessageParam,
-} from 'openai/src/resources/chat/completions';
+} from 'openai/src/resources/chat/completions.js';
+
 import { ModelClientConfig, OpenRouterProviderPreferences } from '../types.js';
 
-export class ModelClient {
+export class AIChatClient {
   private readonly openai: OpenAI;
   private readonly model: string;
   private readonly providerPreferences?: OpenRouterProviderPreferences;
@@ -55,6 +56,6 @@ export class ModelClient {
     };
 
     const summaryResponse = await this.openai.chat.completions.create(params);
-    return summaryResponse.choices[0].message.content.trim();
+    return summaryResponse?.choices[0].message.content?.trim() || '';
   }
 }

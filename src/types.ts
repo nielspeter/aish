@@ -9,14 +9,13 @@ export interface MessageContent {
   command?: string;
 }
 
-// Define the configuration type for the constructor
 export interface ModelClientConfig {
   baseURL: string;
   apiKey: string;
   model: string;
   providerPreferences?: OpenRouterProviderPreferences;
-  temperature?: number; // Optional with a default value
-  n?: number; // Optional with a default value
+  temperature?: number;
+  n?: number;
 }
 
 /**

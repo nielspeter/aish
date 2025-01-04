@@ -1,13 +1,14 @@
 import chalk from 'chalk';
-import { toMessageContent } from '../helpers/contentHelper.js';
-import { HistoryManager } from '../managers/HistoryManager.js';
-import { ModelClient } from '../services/ModelClient.js';
-import { ShellManager } from '../managers/ShellManager.js';
+
+import { HistoryManager } from '../../history/HistoryManager.js';
+import { AIChatClient } from '../../services/AIChatClient.js';
+import { toMessageContent } from '../contentHelper.js';
+import { ShellManager } from '../ShellManager.js';
 
 /**
  * Handles AI-based commands in a loop.
  *
- * @param userInput The user command that starts with "/"
+ * @param userInput The command to run
  * @param historyManager The conversation history manager
  * @param modelClient The AI model client
  * @param shellManager The shell manager
@@ -17,7 +18,7 @@ import { ShellManager } from '../managers/ShellManager.js';
 export async function runAICommands(
   userInput: string,
   historyManager: HistoryManager,
-  modelClient: ModelClient,
+  modelClient: AIChatClient,
   shellManager: ShellManager,
   showWorkingAnimation: () => Promise<() => void>,
   shouldStop: () => boolean

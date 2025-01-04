@@ -1,14 +1,16 @@
-import chalk from 'chalk';
-import { FileStorageStrategy } from './strategies/fileStorageStrategy.js';
-import { HistoryManager } from './managers/HistoryManager.js';
-import { MODEL_NAME, MODEL_SERVICE_API_KEY, MODEL_SERVICE_HOST } from './config.js';
-import { ModelClient } from './services/ModelClient.js';
-import { ShellManager } from './managers/ShellManager.js';
-import { SimpleTrimmingStrategy } from './strategies/simpleTrimmingStrategy.js';
-import { UserInterface } from './ui/UserInterface.js';
 import { homedir } from 'os';
-import { runAICommands } from './commands/aiCommandRunner.js';
-import { runShellCommand } from './commands/shellCommandRunner.js';
+
+import chalk from 'chalk';
+
+import { HistoryManager } from './history/HistoryManager.js';
+import { FileStorageStrategy } from './history/strategies/FileStorageStrategy.js';
+import { SimpleTrimmingStrategy } from './history/strategies/SimpleTrimmingStrategy.js';
+import { AIChatClient } from './services/AIChatClient.js';
+import { runAICommands } from './shell/commands/aiCommandRunner.js';
+import { runShellCommand } from './shell/commands/shellCommandRunner.js';
+import { ShellManager } from './shell/ShellManager.js';
+import { UserInterface } from './shell/UserInterface.js';
+import { MODEL_NAME, MODEL_SERVICE_API_KEY, MODEL_SERVICE_HOST } from './utils/config.js';
 
 /**
  * Set raw mode on stdin and capture keystrokes
@@ -42,7 +44,7 @@ async function initializeApplication() {
   const historyManager = new HistoryManager(new FileStorageStrategy(), new SimpleTrimmingStrategy());
   const ui = new UserInterface(historyManager);
   const shellManager = new ShellManager();
-  const modelClient = new ModelClient({
+  const chatClient = new AIChatClient({
     baseURL: MODEL_SERVICE_HOST,
     apiKey: MODEL_SERVICE_API_KEY,
     model: MODEL_NAME,
@@ -69,7 +71,7 @@ async function initializeApplication() {
     historyManager,
     ui,
     shellManager,
-    modelClient,
+    modelClient: chatClient,
   };
 }
 

@@ -1,4 +1,4 @@
-import { MessageContent } from '../types';
+import { MessageContent } from '../types.js';
 
 /**
  * Parses a string to extract 'reasoning', 'conclusion', and 'command' values.
@@ -12,7 +12,7 @@ export function toMessageContent(inputString: string): MessageContent {
   const result: MessageContent = {
     reasoning: '',
     conclusion: '',
-    command: null,
+    command: undefined,
   };
 
   // Regular expression to match key-value pairs
@@ -32,7 +32,7 @@ export function toMessageContent(inputString: string): MessageContent {
           .replace(/\\"/g, '"'); // Convert escaped quotes
       } else {
         // If the value is null
-        result[key] = null;
+        result[key] = '';
       }
     }
   }

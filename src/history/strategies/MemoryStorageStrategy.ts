@@ -1,6 +1,7 @@
-import { ChatCompletionMessageParam } from 'openai/src/resources/chat/completions';
-import { SYS_PROMPT } from '../config.js';
-import { StorageStrategy } from './storageStrategy.js';
+import { ChatCompletionMessageParam } from 'openai/src/resources/chat/completions.js';
+
+import { StorageStrategy } from './StorageStrategy.js';
+import { SYS_PROMPT } from '../../utils/config.js';
 
 export class MemoryStorageStrategy implements StorageStrategy {
   private messages: ChatCompletionMessageParam[] = [];

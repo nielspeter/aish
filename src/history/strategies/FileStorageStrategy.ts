@@ -1,9 +1,11 @@
-import { StorageStrategy } from './storageStrategy.js';
-import { ChatCompletionMessageParam } from 'openai/src/resources/chat/completions';
 import fs from 'fs/promises';
-import path from 'path';
 import { homedir } from 'os';
-import { SYS_PROMPT } from '../config.js';
+import path from 'path';
+
+import { ChatCompletionMessageParam } from 'openai/src/resources/chat/completions.js';
+
+import { StorageStrategy } from './StorageStrategy.js';
+import { SYS_PROMPT } from '../../utils/config.js';
 
 export class FileStorageStrategy implements StorageStrategy {
   private readonly HISTORY_FILE_PATH = path.join(homedir(), '.aish_history.json');
@@ -32,7 +34,7 @@ export class FileStorageStrategy implements StorageStrategy {
       const data = JSON.stringify(messages, null, 2);
       await fs.writeFile(this.HISTORY_FILE_PATH, data, { encoding: 'utf-8' });
     } catch (error) {
-      console.error(`Failed to write messages to file: ${error.message}`);
+      console.error(`Failed to write messages to file: ${error instanceof Error ? error.message : error}`);
     }
   }
 }

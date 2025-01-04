@@ -1,13 +1,14 @@
+import { encoding_for_model } from '@dqbd/tiktoken';
 import {
   ChatCompletionAssistantMessageParam,
   ChatCompletionMessageParam,
   ChatCompletionSystemMessageParam,
   ChatCompletionUserMessageParam,
-} from 'openai/src/resources/chat/completions';
-import { HISTORY_MAX_TOKENS, TOKEN_MODEL } from '../config.js';
-import { StorageStrategy } from '../strategies/storageStrategy.js';
-import { TrimmingStrategy } from '../strategies/trimmingStrategy.js';
-import { encoding_for_model } from '@dqbd/tiktoken';
+} from 'openai/src/resources/chat/completions.js';
+
+import { HISTORY_MAX_TOKENS, TOKEN_MODEL } from '../utils/config.js';
+import { StorageStrategy } from './strategies/StorageStrategy.js';
+import { TrimmingStrategy } from './strategies/TrimmingStrategy.js';
 
 export class HistoryManager {
   private messages: ChatCompletionMessageParam[] = [];

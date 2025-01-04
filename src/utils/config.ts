@@ -2,7 +2,7 @@ export const HISTORY_MAX_TOKENS = 8192;
 export const TOKEN_MODEL = 'gpt2';
 
 export const MODEL_NAME = process.env.MODEL_NAME ?? 'qwen25-coder-32b-instruct';
-export const MODEL_SERVICE_API_KEY = process.env.MODEL_SERVICE_API_KEY ?? '';
+export const MODEL_SERVICE_API_KEY = process.env.MODEL_SERVICE_API_KEY ?? 'API_KEY';
 export const MODEL_SERVICE_HOST = process.env.MODEL_SERVICE_HOST ?? 'https://api.lambdalabs.com/v1';
 
 export const SHELL_PROMPT = `export PS1="PROMPT> "\n`;

@@ -1,7 +1,8 @@
-import { ChatCompletionMessageParam } from 'openai/src/resources/chat/completions';
-import { TOKEN_MODEL } from '../config.js';
-import { TrimmingStrategy } from './trimmingStrategy.js';
 import { encoding_for_model } from '@dqbd/tiktoken';
+import { ChatCompletionMessageParam } from 'openai/src/resources/chat/completions.js';
+
+import { TrimmingStrategy } from './TrimmingStrategy.js';
+import { TOKEN_MODEL } from '../../utils/config.js';
 
 export class SimpleTrimmingStrategy implements TrimmingStrategy {
   trim(messages: ChatCompletionMessageParam[], maxTokens: number): ChatCompletionMessageParam[] {

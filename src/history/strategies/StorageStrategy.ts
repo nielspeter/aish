@@ -1,4 +1,4 @@
-import { ChatCompletionMessageParam } from 'openai/src/resources/chat/completions';
+import { ChatCompletionMessageParam } from 'openai/src/resources/chat/completions.js';
 
 export interface StorageStrategy {
   init(): Promise<ChatCompletionMessageParam[]>;
