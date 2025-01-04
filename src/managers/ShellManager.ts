@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { COMMAND_END_MARKER, SHELL_PROMPT } from './config.js';
+import { COMMAND_END_MARKER, SHELL_PROMPT } from '../config.js';
 import { ChildProcess, spawn } from 'child_process';
 import { EventEmitter } from 'events';
 

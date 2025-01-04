@@ -1,5 +1,4 @@
-export const RESPONSE_MAX_TOKENS = 32768; // max response tokens
-export const REQUEST_MAX_TOKENS = 8192; // max request tokens
+export const HISTORY_MAX_TOKENS = 8192;
 export const TOKEN_MODEL = 'gpt2';
 
 export const MODEL_NAME = process.env.MODEL_NAME ?? 'qwen25-coder-32b-instruct';

@@ -2,12 +2,12 @@ import chalk from 'chalk';
 import fs from 'fs/promises';
 import path from 'path';
 import {
+  ChatCompletionAssistantMessageParam,
   ChatCompletionMessageParam,
   ChatCompletionSystemMessageParam,
   ChatCompletionUserMessageParam,
-  ChatCompletionAssistantMessageParam,
 } from 'openai/src/resources/chat/completions';
-import { TOKEN_MODEL, SYS_PROMPT } from './config.js';
+import { SYS_PROMPT, TOKEN_MODEL } from '../config.js';
 import { encoding_for_model } from '@dqbd/tiktoken';
 import { homedir } from 'os';
 

@@ -4,7 +4,7 @@ import {
   ChatCompletionCreateParams,
   ChatCompletionMessageParam,
 } from 'openai/src/resources/chat/completions';
-import { ModelClientConfig, OpenRouterProviderPreferences } from './types.js';
+import { ModelClientConfig, OpenRouterProviderPreferences } from '../types.js';
 
 export class ModelClient {
   private readonly openai: OpenAI;

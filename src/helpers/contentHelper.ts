@@ -1,4 +1,4 @@
-import { MessageContent } from './types.js';
+import { MessageContent } from '../types';
 
 /**
  * Parses a string to extract 'reasoning', 'conclusion', and 'command' values.

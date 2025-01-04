@@ -1,12 +1,12 @@
 import chalk from 'chalk';
-import { runAICommands } from '../commands/aiCommandRunner.js';
-import { runShellCommand } from '../commands/shellCommandRunner.js';
+import { runAICommands } from './commands/aiCommandRunner.js';
+import { runShellCommand } from './commands/shellCommandRunner.js';
 import { homedir } from 'os';
-import { HistoryManager } from '../HistoryManager';
-import { UserInterface } from '../UserInterface';
-import { ShellManager } from '../ShellManager';
-import { ModelClient } from '../ModelClient';
-import { MODEL_NAME, MODEL_SERVICE_API_KEY, MODEL_SERVICE_HOST } from '../config';
+import { HistoryManager } from './managers/HistoryManager.js';
+import { UserInterface } from './ui/UserInterface.js';
+import { ShellManager } from './managers/ShellManager.js';
+import { ModelClient } from './services/ModelClient.js';
+import { MODEL_NAME, MODEL_SERVICE_API_KEY, MODEL_SERVICE_HOST } from './config.js';
 
 async function initializeApplication() {
   console.clear();
