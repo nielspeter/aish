@@ -6,6 +6,9 @@ export async function runShellCommand(userInput: string, historyManager: History
   const command = userInput.trim();
 
   try {
+    // Append user command to conversation history
+    await historyManager.addToHistory({ role: 'user', content: command });
+
     const { stdout, stderr } = await shellManager.executeCommand(command);
     if (stderr) {
       console.error(chalk.red(stderr));
@@ -14,9 +17,6 @@ export async function runShellCommand(userInput: string, historyManager: History
       console.log(chalk.whiteBright(stdout));
       await historyManager.addToHistory({ role: 'assistant', content: `Command output: ${JSON.stringify(stdout)}` });
     }
-
-    // Append user command to conversation history
-    await historyManager.addToHistory({ role: 'user', content: command });
   } catch (execError) {
     const errorMsg = execError instanceof Error ? execError.message : String(execError);
     console.error(chalk.red(`Execution Error: ${errorMsg}`));
