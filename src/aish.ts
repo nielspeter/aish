@@ -10,7 +10,7 @@ import { runAICommands } from './shell/commands/aiCommandRunner.js';
 import { runShellCommand } from './shell/commands/shellCommandRunner.js';
 import { ShellManager } from './shell/ShellManager.js';
 import { UserInterface } from './shell/UserInterface.js';
-import { MODEL_NAME, MODEL_SERVICE_API_KEY, MODEL_SERVICE_HOST } from './utils/config.js';
+import { MODEL_NAME, MODEL_SERVICE_API_KEY, MODEL_SERVICE_URL } from './utils/config.js';
 
 /**
  * Interface representing the structure of stop flags used in key listeners.
@@ -82,7 +82,7 @@ async function initializeApplication(): Promise<{
   const ui = new UserInterface(historyManager);
   const shellManager = new ShellManager();
   const chatClient = new AIChatClient({
-    baseURL: MODEL_SERVICE_HOST,
+    baseURL: MODEL_SERVICE_URL,
     apiKey: MODEL_SERVICE_API_KEY,
     model: MODEL_NAME,
   });
