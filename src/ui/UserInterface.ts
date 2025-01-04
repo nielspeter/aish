@@ -1,19 +1,16 @@
 import chalk from 'chalk';
 import readline from 'readline';
-import { MessageHelper } from './messageHelper.js';
+import { HistoryManager } from './HistoryManager';
 import { REQUEST_MAX_TOKENS } from './config.js';
 
 /**
  * Class representing a user interface for interacting with the shell.
  */
 export class UserInterface {
-  private readonly messageHelper: MessageHelper;
+  private readonly messageHelper: HistoryManager;
   private readonly rl: readline.Interface;
 
-  /**
-   * Creates an instance of UserInterface.
-   */
-  constructor(messageHelper: MessageHelper) {
+  constructor(messageHelper: HistoryManager) {
     this.messageHelper = messageHelper;
     this.rl = readline.createInterface({
       input: process.stdin,
@@ -27,7 +24,7 @@ export class UserInterface {
    */
   public askQuestion(): Promise<string> {
     const prompt =
-      chalk.cyan(`\n(t:${this.messageHelper.calculateTokenCount()}:${REQUEST_MAX_TOKENS}) root@aish `) +
+      chalk.cyan(`(t:${this.messageHelper.calculateTokenCount()}:${REQUEST_MAX_TOKENS}) root@aish `) +
       chalk.cyanBright('% ');
     return new Promise((resolve) => this.rl.question(prompt, resolve));
   }

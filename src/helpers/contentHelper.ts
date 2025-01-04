@@ -7,30 +7,29 @@ import { MessageContent } from './types.js';
  * @throws Will throw an error if parsing or validation fails.
  */
 export function toMessageContent(inputString: string): MessageContent {
-  // Define the keys we're interested in
-  const keys = ['reasoning', 'conclusion', 'command'];
+  const keys: Array<keyof MessageContent> = ['reasoning', 'conclusion', 'command'];
 
-  // Initialize an empty object to hold the extracted values
-  const result: Record<string, string | null> = {};
+  const result: MessageContent = {
+    reasoning: '',
+    conclusion: '',
+    command: null,
+  };
 
   // Regular expression to match key-value pairs
   const regex = /"(\w+)":\s*(?:"((?:[^"\\]|\\.)*)"|null)/g;
 
-  let match;
+  let match: RegExpExecArray | null;
   while ((match = regex.exec(inputString)) !== null) {
-    const key = match[1];
+    const key = match[1] as keyof MessageContent;
     const rawValue = match[2]; // Capture the raw match here
 
-    // Only process keys we're interested in
     if (keys.includes(key)) {
       if (rawValue !== undefined) {
-        // Decode the raw string, preserving escaped sequences
-        const value = rawValue
+        result[key] = rawValue
           .replace(/\\\\/g, '\\') // Handle double backslashes
           .replace(/\\n/g, '\n') // Convert `\n` to newline
           .replace(/\\t/g, '\t') // Convert `\t` to tab
           .replace(/\\"/g, '"'); // Convert escaped quotes
-        result[key] = value;
       } else {
         // If the value is null
         result[key] = null;
@@ -38,5 +37,5 @@ export function toMessageContent(inputString: string): MessageContent {
     }
   }
 
-  return result as unknown as MessageContent;
+  return result;
 }

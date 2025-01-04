@@ -15,7 +15,7 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint --fix",
-    "start": "node --no-warnings --watch --loader ts-node/esm src/app.ts"
+    "start": "node --no-warnings --watch --loader ts-node/esm src/aish.ts"
   },
   "engines": {
     "node": ">=22"
@@ -33,7 +33,7 @@
     "eslint": "^9.10.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
-    "ollama": "^0.5.11",
+    "openai": "^4.77.3",
     "prettier": "^3.3.3",
     "yargs": "^17.7.2"
   }

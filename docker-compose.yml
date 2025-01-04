@@ -1,5 +1,5 @@
 services:
-    app:
+    aish:
       build:
         context: .
         dockerfile: Dockerfile
@@ -10,7 +10,7 @@ services:
         #- MODEL_SERVICE_HOST=http://host.docker.internal:11434
         #- OLLAMA_FLASH_ATTENTION=true
         #- MODEL_NAME=qwen2.5-coder:32b
-        - MODEL_SERVICE_HOST=https://api.lambdalabs.com/v1/chat/completions
+        - MODEL_SERVICE_HOST=https://api.lambdalabs.com/v1
         - MODEL_NAME=qwen25-coder-32b-instruct # or lfm-40b
         - MODEL_SERVICE_API_KEY=<API_KEY>
       user: root
