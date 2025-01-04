@@ -1,45 +1,52 @@
-import chalk from 'chalk';
-import fs from 'fs/promises';
-import path from 'path';
 import {
   ChatCompletionAssistantMessageParam,
   ChatCompletionMessageParam,
   ChatCompletionSystemMessageParam,
   ChatCompletionUserMessageParam,
 } from 'openai/src/resources/chat/completions';
-import { SYS_PROMPT, TOKEN_MODEL } from '../config.js';
+import { HISTORY_MAX_TOKENS, TOKEN_MODEL } from '../config.js';
+import { StorageStrategy } from '../strategies/storageStrategy.js';
+import { TrimmingStrategy } from '../strategies/trimmingStrategy.js';
 import { encoding_for_model } from '@dqbd/tiktoken';
-import { homedir } from 'os';
-
-/**
- * Path to the hidden history file in the user's home directory.
- */
-export const HISTORY_FILE_PATH = path.join(homedir(), '.aish_history.json');
 
 export class HistoryManager {
-  messages: ChatCompletionMessageParam[] = [];
+  private messages: ChatCompletionMessageParam[] = [];
+  private readonly storageStrategy: StorageStrategy;
+  private readonly trimmingStrategy: TrimmingStrategy;
 
-  async init() {
-    this.messages = await this.readHistoryFromFile();
+  constructor(storageStrategy: StorageStrategy, trimmingStrategy: TrimmingStrategy) {
+    this.storageStrategy = storageStrategy;
+    this.trimmingStrategy = trimmingStrategy;
   }
 
   /**
-   * Adds a message to the history and writes it to the hidden messages file.
+   * Initializes the history by loading existing messages using the storage strategy.
+   */
+  async init() {
+    this.messages = await this.storageStrategy.init();
+  }
+
+  get history() {
+    return [...this.messages];
+  }
+
+  /**
+   * Adds a message to the history, applies trimming if necessary, and persists the history.
    *
-   * @param message
+   * @param message - The message to add.
    */
   async addToHistory(
     message: ChatCompletionSystemMessageParam | ChatCompletionUserMessageParam | ChatCompletionAssistantMessageParam
   ) {
     this.messages.push(message);
-    // this.trimMessagesToFitContext();
-    await this.writeMessagesToFile();
+    this.trimMessagesToFitContext();
+    await this.storageStrategy.writeHistory(this.messages);
   }
 
   /**
-   * Calculates the total number of tokens in the given this.messages.
+   * Calculates the total number of tokens in the current messages.
    *
-   * @returns {number} - The total number of tokens.
+   * @returns The total token count.
    */
   calculateTokenCount(): number {
     try {
@@ -60,118 +67,9 @@ export class HistoryManager {
   }
 
   /**
-   * Reads history from the hidden file.
-   * @returns {Promise<Message[]>} The array of this.messages.
+   * Trims messages to ensure the total token count does not exceed the maximum allowed.
    */
-  private async readHistoryFromFile(): Promise<ChatCompletionMessageParam[]> {
-    try {
-      const data = await fs.readFile(HISTORY_FILE_PATH, 'utf-8');
-      return JSON.parse(data) as ChatCompletionMessageParam[];
-    } catch (error) {
-      // If the file doesn't exist or there's an error, return an array with the system prompt
-      return [
-        {
-          role: 'system',
-          content: SYS_PROMPT,
-        },
-      ];
-    }
+  private trimMessagesToFitContext(maxTokens: number = HISTORY_MAX_TOKENS) {
+    this.messages = this.trimmingStrategy.trim([...this.messages], maxTokens);
   }
-
-  private async writeMessagesToFile(): Promise<void> {
-    try {
-      const data = JSON.stringify(this.messages, null, 2); // Pretty-print with 2 spaces
-      await fs.writeFile(HISTORY_FILE_PATH, data, { encoding: 'utf-8' });
-    } catch (error) {
-      console.error(chalk.red(`Failed to write messages to file: ${error.message}`));
-    }
-  }
-
-  // private isMessageContentType(obj: Record<string, any>): obj is ChatCompletionMessageParam {
-  //   return (
-  //     obj &&
-  //     typeof obj === 'object' &&
-  //     typeof obj.reasoning === 'string' &&
-  //     typeof obj.conclusion === 'string' &&
-  //     (typeof obj.command === 'string' || obj.command === undefined)
-  //   );
-  // }
-  //
-  // private isJsonString(content: string): boolean {
-  //   try {
-  //     JSON.parse(content);
-  //     return true;
-  //   } catch {
-  //     return false;
-  //   }
-  // }
-  //
-  // /**
-  //  * Trims the messages array to fit within the maximum token limit.
-  //  * Summarizes older messages instead of removing them outright.
-  //  *
-  //  * @param {number} maxTokens - The maximum number of tokens allowed.
-  //  */
-  // private trimMessagesToFitContext(maxTokens: number = REQUEST_MAX_TOKENS) {
-  //   // Exclude specific indices from trimming
-  //   const excludeIndices = new Set<number>();
-  //   if (this.messages.length > 0) {
-  //     excludeIndices.add(0); // Exclude system prompt (first message)
-  //     excludeIndices.add(this.messages.length - 1); // Exclude most recent message
-  //   }
-  //
-  //   // Proactively trim all messages except excluded ones
-  //   for (let i = 1; i < this.messages.length - 1; i++) {
-  //     if (!excludeIndices.has(i)) {
-  //       this.trimMessageContent(this.messages[i]);
-  //     }
-  //   }
-  //
-  //   // Calculate the total token count after trimming
-  //   let totalTokens = this.calculateTokenCount();
-  //
-  //   // If still over the limit, perform iterative trimming
-  //   let index = 1;
-  //   while (totalTokens > maxTokens && index < this.messages.length - 1) {
-  //     if (!excludeIndices.has(index)) {
-  //       this.messages[index].content = this.trimStringKeepHeadAndTail(this.messages[index].content, 200); // Further reduce size
-  //       totalTokens = this.calculateTokenCount();
-  //     }
-  //     index++;
-  //   }
-  // }
-  //
-  // private trimStringKeepHeadAndTail(str: string, maxLength = 1000): string {
-  //   if (str.length <= maxLength) {
-  //     return str; // No trimming needed
-  //   }
-  //
-  //   const ellipsis = '...';
-  //   const charsToKeep = maxLength - ellipsis.length;
-  //   const headLength = Math.ceil(charsToKeep / 2);
-  //   const tailLength = Math.floor(charsToKeep / 2);
-  //
-  //   return `${str.slice(0, headLength)}${ellipsis}${str.slice(-tailLength)}`;
-  // }
-  //
-  // private trimMessageContent(message: ChatCompletionAssistantMessageParam): void {
-  //   if (this.isJsonString(message.content)) {
-  //     try {
-  //       const parsedContent = JSON.parse(message.content);
-  //
-  //       if (this.isMessageContentType(parsedContent)) {
-  //         parsedContent.reasoning = this.trimStringKeepHeadAndTail(parsedContent.reasoning);
-  //         parsedContent.conclusion = this.trimStringKeepHeadAndTail(parsedContent.conclusion);
-  //         parsedContent.command = this.trimStringKeepHeadAndTail(parsedContent.command ?? '');
-  //         message.content = JSON.stringify(parsedContent);
-  //         return;
-  //       }
-  //     } catch (error) {
-  //       console.error('trimMessageContent: JSON processing error', error.message);
-  //     }
-  //   }
-  //
-  //   // If not JSON or fails processing, treat as plain string
-  //   message.content = this.trimStringKeepHeadAndTail(message.content);
-  // }
 }

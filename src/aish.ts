@@ -1,12 +1,14 @@
 import chalk from 'chalk';
+import { FileStorageStrategy } from './strategies/fileStorageStrategy.js';
+import { HistoryManager } from './managers/HistoryManager.js';
+import { MODEL_NAME, MODEL_SERVICE_API_KEY, MODEL_SERVICE_HOST } from './config.js';
+import { ModelClient } from './services/ModelClient.js';
+import { ShellManager } from './managers/ShellManager.js';
+import { SimpleTrimmingStrategy } from './strategies/simpleTrimmingStrategy.js';
+import { UserInterface } from './ui/UserInterface.js';
+import { homedir } from 'os';
 import { runAICommands } from './commands/aiCommandRunner.js';
 import { runShellCommand } from './commands/shellCommandRunner.js';
-import { homedir } from 'os';
-import { HistoryManager } from './managers/HistoryManager.js';
-import { UserInterface } from './ui/UserInterface.js';
-import { ShellManager } from './managers/ShellManager.js';
-import { ModelClient } from './services/ModelClient.js';
-import { MODEL_NAME, MODEL_SERVICE_API_KEY, MODEL_SERVICE_HOST } from './config.js';
 
 /**
  * Set raw mode on stdin and capture keystrokes
@@ -37,7 +39,7 @@ async function initializeApplication() {
   process.chdir(homedir());
 
   // Instantiate main classes
-  const historyManager = new HistoryManager();
+  const historyManager = new HistoryManager(new FileStorageStrategy(), new SimpleTrimmingStrategy());
   const ui = new UserInterface(historyManager);
   const shellManager = new ShellManager();
   const modelClient = new ModelClient({
@@ -60,8 +62,6 @@ async function initializeApplication() {
     process.exit(0);
   };
 
-  // If you *also* want SIGINT (Ctrl-C) at the OS level to exit immediately,
-  // you can keep this:
   process.on('SIGINT', handleExit);
   process.on('SIGTERM', handleExit);
 
@@ -80,17 +80,16 @@ async function main() {
   // A simple object holding flags we can mutate in the key listener
   const stopFlags = { stopAI: false };
 
-  // Step 2: Setup raw mode so we can detect Ctrl-* combos
+  // Step 2: Setup raw mode so we can detect Ctrl-* key presses
   setupRawModeKeyListener(stopFlags);
 
-  // Step 3: Start main loop
+  // Step 3: Start main loop - infinite loop to keep the shell running
   while (true) {
     try {
       const userInput = await ui.askQuestion();
 
       if (userInput.trim().startsWith('/')) {
         // AI Command flow
-        // Pass a "shouldStop" callback that returns stopFlags.stopAI
         await runAICommands(
           userInput,
           historyManager,
