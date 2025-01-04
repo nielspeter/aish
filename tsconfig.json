@@ -3,6 +3,16 @@
     "esModuleInterop": true,
     "module": "ESNext",
     "target": "ES2022",
-    "moduleResolution": "node"
-  }
+    "moduleResolution": "node16", // Updated from "node" to "node16"
+    "strict": true,                // Enable strict type-checking
+    "forceConsistentCasingInFileNames": true, // Ensure consistent casing
+    "skipLibCheck": true,          // Skip type checking of declaration files
+    "outDir": "./dist",            // Output directory for compiled files
+    "baseUrl": "./",               // Base directory for non-relative module names
+    "paths": {
+      "*": ["*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "build"]
 }
