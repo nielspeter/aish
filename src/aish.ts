@@ -13,10 +13,22 @@ import { UserInterface } from './shell/UserInterface.js';
 import { MODEL_NAME, MODEL_SERVICE_API_KEY, MODEL_SERVICE_HOST } from './utils/config.js';
 
 /**
- * Set raw mode on stdin and capture keystrokes
- * so we can detect Ctrl-C, Ctrl-Q, etc.
+ * Interface representing the structure of stop flags used in key listeners.
  */
-function setupRawModeKeyListener(stopFlags: { stopAI: boolean }) {
+interface StopFlags {
+  stopAI: boolean;
+}
+
+/**
+ * Sets up a raw mode key listener on `stdin` to detect specific key presses such as Ctrl-C and Ctrl-Q.
+ *
+ * This function enables raw mode on the standard input, allowing the application to capture keystrokes
+ * directly without waiting for the Enter key. It listens for Ctrl-C (to gracefully terminate the AI)
+ * and Ctrl-Q (to gracefully terminate the entire application).
+ *
+ * @param {StopFlags} stopFlags - An object containing flags that can be mutated to control application behavior.
+ */
+function setupRawModeKeyListener(stopFlags: StopFlags): void {
   // Put stdin in raw mode
   process.stdin.setRawMode?.(true);
   process.stdin.resume();
@@ -36,7 +48,32 @@ function setupRawModeKeyListener(stopFlags: { stopAI: boolean }) {
   });
 }
 
-async function initializeApplication() {
+/**
+ * Initializes the application by setting up necessary components such as history management,
+ * user interface, shell management, and AI chat client.
+ *
+ * This function performs the following steps:
+ * 1. Clears the console and sets the current working directory to the user's home directory.
+ * 2. Instantiates the main classes responsible for managing chat history, user interface, shell commands,
+ *    and AI interactions.
+ * 3. Initializes the history manager to load existing chat history.
+ * 4. Displays a welcome message with usage tips.
+ * 5. Sets up graceful shutdown handlers for signals like SIGINT and SIGTERM.
+ *
+ * @async
+ * @returns {Promise<{
+ *   historyManager: HistoryManager;
+ *   ui: UserInterface;
+ *   shellManager: ShellManager;
+ *   modelClient: AIChatClient;
+ * }>} An object containing initialized instances of HistoryManager, UserInterface, ShellManager, and AIChatClient.
+ */
+async function initializeApplication(): Promise<{
+  historyManager: HistoryManager;
+  ui: UserInterface;
+  shellManager: ShellManager;
+  modelClient: AIChatClient;
+}> {
   console.clear();
   process.chdir(homedir());
 
@@ -75,12 +112,26 @@ async function initializeApplication() {
   };
 }
 
-async function main() {
+/**
+ * The main entry point of the application.
+ *
+ * This function performs the following steps:
+ * 1. Initializes the application components.
+ * 2. Sets up a raw mode key listener to detect and handle specific key presses.
+ * 3. Enters an infinite loop to continuously accept user input.
+ *    - If the input starts with "/", it processes the input as an AI command.
+ *    - Otherwise, it processes the input as a shell command.
+ * 4. Handles unexpected errors gracefully by logging them and updating the chat history.
+ *
+ * @async
+ * @returns {Promise<void>} A promise that resolves when the application exits.
+ */
+async function main(): Promise<void> {
   // Step 1: Initialize everything
   const { historyManager, ui, shellManager, modelClient } = await initializeApplication();
 
   // A simple object holding flags we can mutate in the key listener
-  const stopFlags = { stopAI: false };
+  const stopFlags: StopFlags = { stopAI: false };
 
   // Step 2: Setup raw mode so we can detect Ctrl-* key presses
   setupRawModeKeyListener(stopFlags);
@@ -118,7 +169,14 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error(chalk.red(`Unexpected Error: ${err.message}`));
+/**
+ * Executes the main function and handles any unhandled promise rejections.
+ *
+ * If an unexpected error occurs during the execution of `main`, it logs the error message
+ * and exits the process with a failure code.
+ */
+main().catch((err: unknown) => {
+  const errorMsg = err instanceof Error ? err.message : String(err);
+  console.error(chalk.red(`Unexpected Error: ${errorMsg}`));
   process.exit(1);
 });

@@ -9,12 +9,55 @@ export interface MessageContent {
   command?: string;
 }
 
+/**
+ * Interface representing the configuration settings for the AIChatClient.
+ *
+ * This configuration includes necessary parameters such as the API base URL, API key, model selection,
+ * provider-specific preferences, and optional settings like temperature and the number of completions.
+ */
 export interface ModelClientConfig {
+  /**
+   * The base URL of the AI model service API.
+   *
+   * This URL is used as the endpoint for all API requests made by the AIChatClient.
+   */
   baseURL: string;
+
+  /**
+   * The API key used to authenticate requests to the AI model service.
+   */
   apiKey: string;
+
+  /**
+   * The name of the AI model to be used for generating responses.
+   *
+   * Common models include 'gpt-3.5-turbo', 'gpt-4', etc.
+   * ```
+   */
   model: string;
+
+  /**
+   * Optional provider-specific preferences for the AI model service.
+   *
+   * These preferences allow for customization based on the provider's capabilities and requirements.
+   */
   providerPreferences?: OpenRouterProviderPreferences;
+
+  /**
+   * Controls the randomness of the AI's responses.
+   *
+   * - **Higher values (e.g., 0.8):** Make the output more random and creative.
+   * - **Lower values (e.g., 0.2):** Make the output more focused and deterministic.
+   *
+   * This parameter influences the diversity of the generated responses.
+   */
   temperature?: number;
+
+  /**
+   * The number of completions to generate for each prompt.
+   *
+   * Generating multiple completions allows for selecting the most appropriate response among various options.
+   */
   n?: number;
 }
 

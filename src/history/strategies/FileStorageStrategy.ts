@@ -7,13 +7,30 @@ import { ChatCompletionMessageParam } from 'openai/src/resources/chat/completion
 import { StorageStrategy } from './StorageStrategy.js';
 import { SYS_PROMPT } from '../../utils/config.js';
 
+/**
+ * FileStorageStrategy is a concrete implementation of the StorageStrategy interface.
+ *
+ * This strategy handles the persistence of chat messages by reading from and writing
+ * to a JSON file located in the user's home directory. It ensures that the chat history
+ * is maintained across different sessions of the application.
+ */
 export class FileStorageStrategy implements StorageStrategy {
   private readonly HISTORY_FILE_PATH = path.join(homedir(), '.aish_history.json');
 
+  /**
+   * Initializes the storage by loading existing chat history.
+   *
+   * @returns {Promise<ChatCompletionMessageParam[]>} A promise that resolves to an array of chat messages.
+   */
   async init(): Promise<ChatCompletionMessageParam[]> {
     return this.readHistory();
   }
 
+  /**
+   * Reads the existing chat history from the storage file.
+   *
+   * @returns {Promise<ChatCompletionMessageParam[]>} A promise that resolves to an array of chat messages.
+   */
   async readHistory(): Promise<ChatCompletionMessageParam[]> {
     try {
       const data = await fs.readFile(this.HISTORY_FILE_PATH, 'utf-8');
@@ -29,6 +46,12 @@ export class FileStorageStrategy implements StorageStrategy {
     }
   }
 
+  /**
+   * Writes the provided chat messages to the storage file.
+   *
+   * @param {ChatCompletionMessageParam[]} messages - An array of chat messages to be stored.
+   * @returns {Promise<void>} A promise that resolves when the write operation is complete.
+   */
   async writeHistory(messages: ChatCompletionMessageParam[]): Promise<void> {
     try {
       const data = JSON.stringify(messages, null, 2);
