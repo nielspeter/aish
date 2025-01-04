@@ -8,6 +8,30 @@ import { ShellManager } from './managers/ShellManager.js';
 import { ModelClient } from './services/ModelClient.js';
 import { MODEL_NAME, MODEL_SERVICE_API_KEY, MODEL_SERVICE_HOST } from './config.js';
 
+/**
+ * Set raw mode on stdin and capture keystrokes
+ * so we can detect Ctrl-C, Ctrl-Q, etc.
+ */
+function setupRawModeKeyListener(stopFlags: { stopAI: boolean }) {
+  // Put stdin in raw mode
+  process.stdin.setRawMode?.(true);
+  process.stdin.resume();
+  process.stdin.setEncoding('utf8');
+
+  process.stdin.on('data', (key) => {
+    if (key.toString() === '\u0003') {
+      // Ctrl-C pressed
+      stopFlags.stopAI = true;
+    }
+    if (key.toString() === '\u0011') {
+      // Ctrl-Q pressed
+      stopFlags.stopAI = true;
+      process.stdout.write('\n[Stopping — Ctrl-Q pressed]\n');
+      process.exit(0);
+    }
+  });
+}
+
 async function initializeApplication() {
   console.clear();
   process.chdir(homedir());
@@ -36,6 +60,8 @@ async function initializeApplication() {
     process.exit(0);
   };
 
+  // If you *also* want SIGINT (Ctrl-C) at the OS level to exit immediately,
+  // you can keep this:
   process.on('SIGINT', handleExit);
   process.on('SIGTERM', handleExit);
 
@@ -51,13 +77,31 @@ async function main() {
   // Step 1: Initialize everything
   const { historyManager, ui, shellManager, modelClient } = await initializeApplication();
 
-  // Step 2: Start main loop
+  // A simple object holding flags we can mutate in the key listener
+  const stopFlags = { stopAI: false };
+
+  // Step 2: Setup raw mode so we can detect Ctrl-* combos
+  setupRawModeKeyListener(stopFlags);
+
+  // Step 3: Start main loop
   while (true) {
     try {
       const userInput = await ui.askQuestion();
+
       if (userInput.trim().startsWith('/')) {
         // AI Command flow
-        await runAICommands(userInput, historyManager, modelClient, shellManager, ui.showWorkingAnimation.bind(ui));
+        // Pass a "shouldStop" callback that returns stopFlags.stopAI
+        await runAICommands(
+          userInput,
+          historyManager,
+          modelClient,
+          shellManager,
+          ui.showWorkingAnimation.bind(ui),
+          () => stopFlags.stopAI
+        );
+
+        // After the AI loop finishes, reset the stop flag so the next AI command works
+        stopFlags.stopAI = false;
       } else {
         // Shell Command flow
         await runShellCommand(userInput, historyManager, shellManager);
@@ -65,7 +109,10 @@ async function main() {
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
       console.error(chalk.red(`Unexpected Error: ${errorMsg}`));
-      await historyManager.addToHistory({ role: 'user', content: `Error encountered: ${errorMsg}` });
+      await historyManager.addToHistory({
+        role: 'user',
+        content: `Error encountered: ${errorMsg}`,
+      });
     }
   }
 }

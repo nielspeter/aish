@@ -16,6 +16,12 @@ export class UserInterface {
       input: process.stdin,
       output: process.stdout,
     });
+
+    // -- Override the default Ctrl-C behavior so that readline doesn't close --
+    this.rl.on('SIGINT', () => {
+      process.stdout.write(chalk.yellow('\n(^C) Ctrl-C was pressed.\n'));
+      this.rl.prompt();
+    });
   }
 
   /**
@@ -26,21 +32,29 @@ export class UserInterface {
     const prompt =
       chalk.cyan(`(t:${this.messageHelper.calculateTokenCount()}:${HISTORY_MAX_TOKENS}) root@aish `) +
       chalk.cyanBright('% ');
-    return new Promise((resolve) => this.rl.question(prompt, resolve));
+
+    return new Promise((resolve) => {
+      this.rl.question(prompt, (answer) => {
+        resolve(answer);
+      });
+    });
   }
 
-  // Blinking Cursor Animation
+  /**
+   * Blinking "working" animation (⚙️ ... ).
+   * Returns a stop function to end the animation.
+   */
   public async showWorkingAnimation() {
-    const frames = ['⚙️ ', '   ']; // Frames for blinking
+    const frames = ['⚙️ ', '   ']; // Frames for blinking animation
     let frameIndex = 0;
 
     const intervalId = setInterval(() => {
       process.stdout.write('\r' + frames[frameIndex]);
       frameIndex = (frameIndex + 1) % frames.length;
-    }, 500); // Adjust the blinking speed
+    }, 500);
 
     return () => {
-      clearInterval(intervalId); // Clear the interval
+      clearInterval(intervalId);
       process.stdout.write('\r'); // Clear the "Working" line
     };
   }
