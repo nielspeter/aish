@@ -31,17 +31,16 @@ export interface ModelClientConfig {
   /**
    * The name of the AI model to be used for generating responses.
    *
-   * Common models include 'gpt-3.5-turbo', 'gpt-4', etc.
-   * ```
+   * Models like 'qwen25-coder-32b-instruct', 'lfm-40b', etc.
    */
   model: string;
 
   /**
-   * Optional provider-specific preferences for the AI model service.
+   * OpenRouter optional provider-specific preferences for the AI model service.
    *
    * These preferences allow for customization based on the provider's capabilities and requirements.
    */
-  providerPreferences?: OpenRouterProviderPreferences;
+  openRouterProviderPreferences?: OpenRouterProviderPreferences;
 
   /**
    * Controls the randomness of the AI's responses.

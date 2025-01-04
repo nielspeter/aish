@@ -22,9 +22,9 @@ export class AIChatClient {
   private readonly model: string;
 
   /**
-   * Optional provider-specific preferences.
+   * OpenRouter optional provider-specific preferences.
    */
-  private readonly providerPreferences?: OpenRouterProviderPreferences;
+  private readonly openRouterProviderPreferences?: OpenRouterProviderPreferences;
 
   /**
    * Controls the randomness of the AI's responses.
@@ -48,7 +48,7 @@ export class AIChatClient {
       apiKey: config.apiKey,
     });
     this.model = config.model;
-    this.providerPreferences = config.providerPreferences;
+    this.openRouterProviderPreferences = config.openRouterProviderPreferences;
     this.temperature = config.temperature ?? 0.2; // Default value
     this.n = config.n ?? 1; // Default value
   }
@@ -68,7 +68,7 @@ export class AIChatClient {
       model: this.model,
       temperature: this.temperature,
       n: this.n,
-      ...(this.providerPreferences && { provider: this.providerPreferences }),
+      ...(this.openRouterProviderPreferences && { provider: this.openRouterProviderPreferences }),
     };
     return this.openai.chat.completions.create(params);
   }

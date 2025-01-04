@@ -72,7 +72,7 @@ async function initializeApplication(): Promise<{
   historyManager: HistoryManager;
   ui: UserInterface;
   shellManager: ShellManager;
-  modelClient: AIChatClient;
+  chatClient: AIChatClient;
 }> {
   console.clear();
   process.chdir(homedir());
@@ -108,7 +108,7 @@ async function initializeApplication(): Promise<{
     historyManager,
     ui,
     shellManager,
-    modelClient: chatClient,
+    chatClient: chatClient,
   };
 }
 
@@ -128,7 +128,7 @@ async function initializeApplication(): Promise<{
  */
 async function main(): Promise<void> {
   // Step 1: Initialize everything
-  const { historyManager, ui, shellManager, modelClient } = await initializeApplication();
+  const { historyManager, ui, shellManager, chatClient } = await initializeApplication();
 
   // A simple object holding flags we can mutate in the key listener
   const stopFlags: StopFlags = { stopAI: false };
@@ -144,9 +144,9 @@ async function main(): Promise<void> {
       if (userInput.trim().startsWith('/')) {
         // AI Command flow
         await runAICommands(
-          userInput,
+          userInput.trim().substring(1).trim(),
           historyManager,
-          modelClient,
+          chatClient,
           shellManager,
           ui.showWorkingAnimation.bind(ui),
           () => stopFlags.stopAI
