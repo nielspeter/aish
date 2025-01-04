@@ -19,7 +19,9 @@ export class LatestInteractionTrimmingStrategy implements TrimmingStrategy {
    * @returns {ChatCompletionMessageParam[]} A new array of trimmed chat messages.
    */
   trim(messages: ChatCompletionMessageParam[], maxTokens: number): ChatCompletionMessageParam[] {
-    if (!messages || messages.length === 0) {
+    const messagesCopy = [...messages]; // Clone the array
+
+    if (!messagesCopy || messagesCopy.length === 0) {
       // If no messages are provided, initialize with the system prompt.
       return [
         {
@@ -30,29 +32,43 @@ export class LatestInteractionTrimmingStrategy implements TrimmingStrategy {
     }
 
     // Ensure that the first message is the system prompt.
-    const systemPromptIndex = messages.findIndex((msg) => msg.role === 'system');
+    const systemPromptIndex = messagesCopy.findIndex((msg) => msg.role === 'system');
     if (systemPromptIndex === -1) {
       throw new Error('System prompt is missing in the provided messages.');
     }
 
     const encoding = encoding_for_model(TOKEN_MODEL);
-    let totalTokens = this.calculateTokenCount(messages, encoding);
+    let totalTokens = this.calculateTokenCount(messagesCopy, encoding);
+
+    // If total tokens are within the limit, return all messages.
+    if (totalTokens <= maxTokens) {
+      encoding.free();
+      return messagesCopy;
+    }
 
     // 1. Trim messages by removing oldest non-system messages until:
     //    a) totalTokens <= maxTokens, or
     //    b) only system prompt, latest user, and assistant response remain.
-    while (totalTokens > maxTokens && messages.length > 3) {
+    while (totalTokens > maxTokens && messagesCopy.length > 3) {
       // Remove the oldest message after the system prompt.
       const removeIndex = systemPromptIndex === 0 ? 1 : 0;
-      messages.splice(removeIndex, 1);
-      totalTokens = this.calculateTokenCount(messages, encoding);
+      messagesCopy.splice(removeIndex, 1);
+      totalTokens = this.calculateTokenCount(messagesCopy, encoding);
+    }
+
+    // After trimming, check if trimming was necessary
+    // If trimming was not necessary (i.e., all messages are already within limit), return all messages
+    // Else, retain only system prompt, latest user message, and assistant response
+    if (totalTokens <= maxTokens) {
+      encoding.free();
+      return messagesCopy;
     }
 
     // 2. Retain only the system prompt, the latest user message, and its assistant response (if any).
     const finalMessages: ChatCompletionMessageParam[] = [];
 
     // Always include the system prompt.
-    const systemPrompt = messages.find((msg) => msg.role === 'system');
+    const systemPrompt = messagesCopy.find((msg) => msg.role === 'system');
     if (systemPrompt) {
       finalMessages.push(systemPrompt);
     } else {
@@ -64,7 +80,7 @@ export class LatestInteractionTrimmingStrategy implements TrimmingStrategy {
     }
 
     // Find the index of the last user message.
-    const lastUserMessageIndex = messages
+    const lastUserMessageIndex = messagesCopy
       .map((msg, idx) => ({ msg, idx }))
       .filter(({ msg }) => msg.role === 'user')
       .map(({ idx }) => idx)
@@ -72,17 +88,17 @@ export class LatestInteractionTrimmingStrategy implements TrimmingStrategy {
 
     if (lastUserMessageIndex !== undefined) {
       // Add the latest user message.
-      const latestUserMessage = messages[lastUserMessageIndex];
+      const latestUserMessage = messagesCopy[lastUserMessageIndex];
       finalMessages.push(latestUserMessage);
 
       // Check if there's an assistant response immediately following the latest user message.
-      const maybeAssistant = messages[lastUserMessageIndex + 1];
+      const maybeAssistant = messagesCopy[lastUserMessageIndex + 1];
       if (maybeAssistant && maybeAssistant.role === 'assistant') {
         finalMessages.push(maybeAssistant);
       }
     }
 
-    // Free the encoding instance to avoid memory leaks.
+    // Always free the encoding instance
     encoding.free();
 
     return finalMessages;

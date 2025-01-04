@@ -15,6 +15,7 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint --fix",
+    "test": "vitest",
     "start": "node --no-warnings --watch --loader ts-node/esm src/aish.ts"
   },
   "engines": {
@@ -24,7 +25,8 @@
     "@types/node": "^22.10.2",
     "eslint-plugin-import": "^2.31.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
   },
   "dependencies": {
     "@dqbd/tiktoken": "^1.0.18",
