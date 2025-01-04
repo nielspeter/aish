@@ -4,7 +4,7 @@ import chalk from 'chalk';
 
 import { HistoryManager } from './history/HistoryManager.js';
 import { FileStorageStrategy } from './history/strategies/FileStorageStrategy.js';
-import { SimpleTrimmingStrategy } from './history/strategies/SimpleTrimmingStrategy.js';
+import { LatestInteractionTrimmingStrategy } from './history/strategies/LatestInteractionTrimmingStrategy.js';
 import { AIChatClient } from './services/AIChatClient.js';
 import { runAICommands } from './shell/commands/aiCommandRunner.js';
 import { runShellCommand } from './shell/commands/shellCommandRunner.js';
@@ -78,7 +78,7 @@ async function initializeApplication(): Promise<{
   process.chdir(homedir());
 
   // Instantiate main classes
-  const historyManager = new HistoryManager(new FileStorageStrategy(), new SimpleTrimmingStrategy());
+  const historyManager = new HistoryManager(new FileStorageStrategy(), new LatestInteractionTrimmingStrategy());
   const ui = new UserInterface(historyManager);
   const shellManager = new ShellManager();
   const chatClient = new AIChatClient({
