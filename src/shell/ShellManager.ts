@@ -1,19 +1,15 @@
-import chalk from 'chalk';
-import { COMMAND_END_MARKER, SHELL_PROMPT } from './config.js';
 import { ChildProcess, spawn } from 'child_process';
 import { EventEmitter } from 'events';
 
-/**
- * Class representing a manager for executing shell commands.
- */
+import chalk from 'chalk';
+
+import { COMMAND_END_MARKER, SHELL_PROMPT } from '../utils/config.js';
+
 export class ShellManager {
   private readonly shell: ChildProcess;
   private readonly outputEmitter: EventEmitter;
   private buffer: string;
 
-  /**
-   * Creates an instance of ShellManager.
-   */
   constructor() {
     this.shell = spawn('bash', [], {
       stdio: 'pipe',

@@ -119,11 +119,11 @@ This builds and runs the Docker container, attaching you to an AI-driven shell e
 The application supports two model clients: Ollama (local) and Lambda Lab API (remote). Configure the model client by setting the appropriate environment variables in the `docker-compose.yml` file or your environment.
 
 #### Ollama (Local)
-- **MODEL_SERVICE_HOST**: Set to the local Ollama service host.
+- **MODEL_SERVICE_URL**: Set to the local Ollama service url.
 - **MODEL_NAME**: Set to `qwen2.5-coder:32b` for best results. You can also use `qwen2.5-coder:14b` for lower memory usage but reduced performance.
 
 #### Lambda Lab API (Remote)
-- **MODEL_SERVICE_HOST**: Set to `https://api.lambdalabs.com/v1/chat/completions`.
+- **MODEL_SERVICE_URL**: Set to `https://api.lambdalabs.com/v1`.
 - **MODEL_NAME**: Set to `qwen25-coder-32b-instruct` for best results or `lfm-40b`.
 - **MODEL_SERVICE_API_KEY**: Set to your Lambda Lab API key.
 

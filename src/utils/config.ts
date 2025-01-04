@@ -1,10 +1,8 @@
-export const RESPONSE_MAX_TOKENS = 32768; // max response tokens
-export const REQUEST_MAX_TOKENS = 8192; // max request tokens
+export const HISTORY_MAX_TOKENS = 8192;
 export const TOKEN_MODEL = 'gpt2';
-
-export const MODEL_NAME = process.env.MODEL_NAME ?? 'qwen25-coder-32b-instruct';
-export const MODEL_SERVICE_API_KEY = process.env.MODEL_SERVICE_API_KEY ?? '';
-export const MODEL_SERVICE_HOST = process.env.MODEL_SERVICE_HOST ?? 'https://api.lambdalabs.com/v1/chat/completions';
+export const MODEL_NAME = process.env.MODEL_NAME ?? 'qwen2.5-coder:32b'; // 'qwen25-coder-32b-instruct'
+export const MODEL_SERVICE_API_KEY = process.env.MODEL_SERVICE_API_KEY ?? 'not_needed'; // <lambdalabs api key>
+export const MODEL_SERVICE_URL = process.env.MODEL_SERVICE_URL ?? 'http://localhost:11434/v1'; // 'https://api.lambdalabs.com/v1';
 
 export const SHELL_PROMPT = `export PS1="PROMPT> "\n`;
 export const COMMAND_END_MARKER = '__COMMAND_END__';
