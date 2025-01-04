@@ -2,8 +2,8 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "module": "ESNext",
-    "target": "ES2022",
-    "moduleResolution": "node16", // Updated from "node" to "node16"
+    "target": "ESNext",
+    "moduleResolution": "NodeNext",
     "strict": true,                // Enable strict type-checking
     "forceConsistentCasingInFileNames": true, // Ensure consistent casing
     "skipLibCheck": true,          // Skip type checking of declaration files
