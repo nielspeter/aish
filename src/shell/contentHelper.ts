@@ -1,12 +1,46 @@
 import { MessageContent } from '../types.js';
 
 /**
- * Parses a string to extract 'reasoning', 'conclusion', and 'command' values.
- * @param {string} inputString - The input string containing the data.
- * @returns {Object} - The parsed and validated object.
- * @throws Will throw an error if parsing or validation fails.
+ * Safely parses a JSON string.
+ * @param jsonString - The JSON string to parse.
+ * @returns A partial MessageContent object or null if parsing fails.
  */
-export function toMessageContent(inputString: string): MessageContent {
+function safeJSONParse(jsonString: string): Partial<MessageContent> | null {
+  try {
+    return JSON.parse(jsonString);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Converts an input string to a MessageContent object.
+ * Attempts to parse the string as JSON first. If that fails, uses a fallback parser.
+ * @param input - The input string to convert.
+ * @returns A MessageContent object.
+ */
+export function toMessageContent(input: string): MessageContent {
+  const trimmedInput = input.trim();
+  const parsedJson = safeJSONParse(trimmedInput);
+
+  if (parsedJson) {
+    const { reasoning = '', conclusion = '', command } = parsedJson;
+    return {
+      reasoning: String(reasoning),
+      conclusion: String(conclusion),
+      command: command ?? undefined,
+    };
+  }
+
+  return parseMessageContentFallback(trimmedInput);
+}
+
+/**
+ * Fallback parser that extracts 'reasoning', 'conclusion', and 'command' from a string.
+ * @param inputString - The input string to parse.
+ * @returns A MessageContent object.
+ */
+function parseMessageContentFallback(inputString: string): MessageContent {
   const keys: Array<keyof MessageContent> = ['reasoning', 'conclusion', 'command'];
 
   const result: MessageContent = {
