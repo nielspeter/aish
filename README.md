@@ -73,6 +73,9 @@ The shell interface in AIsh allows you to execute shell commands as you normally
 - **Standard Shell Commands**: Execute commands directly in the shell.
 - **LLM Commands**: Prefix commands with `/` to send them to the LLM.
 
+### History
+The LLM remembers the history of commands and interactions. This history is stored in a hidden file in the user's home directory called `.aish_messages.json`. This allows the LLM to maintain context and provide more accurate responses based on past interactions.
+
 ## OpenAI Compatible Providers
 
 AIsh is designed to be flexible and can integrate with any OpenAI-compatible provider. This allows you to choose the service that best fits your needs in terms of performance, cost, and available models. Here are some of the supported providers:
@@ -126,9 +129,6 @@ AIsh’s compatibility with multiple providers ensures that you can tailor your 
 
 ## Choice of Model
 AIsh primarily uses the [Qwen2.5-Coder-32B-Instruct](https://qwenlm.github.io/blog/qwen2.5-coder-family/) model for its operations. This model excels at returning structured data and is exceptionally well-suited for the interactive shell environment that AIsh provides. Its ability to generate clear, organized responses ensures reliable and accurate command execution, making it the ideal choice for this application. Extensive testing and development of AIsh have been conducted using `Qwen2.5-Coder-32B-Instruct`, underscoring its effectiveness and compatibility with the project's objectives.
-
-### History
-The LLM remembers the history of commands and interactions. This history is stored in a hidden file in the user's home directory called `.aish_messages.json`. This allows the LLM to maintain context and provide more accurate responses based on past interactions.
 
 ## Getting Started
 To try AIsh, you’ll need a machine with Docker and Ollama installed. If your machine isn’t powerful enough to run the model locally, you can opt to use the Lambda Lab API instead. The project is built with Node.js and TypeScript, making it easy to extend and modify.
