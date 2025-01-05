@@ -6,6 +6,7 @@ import {
 } from 'openai/src/resources/chat/completions.js';
 
 import { ModelClientConfig, OpenRouterProviderPreferences } from '../types.js';
+import { AI_CHAT_CLIENT_RESPONSE_LOGGING } from '../utils/config.js';
 
 /**
  * AIChatClient is responsible for interacting with the OpenAI Chat Completion API.
@@ -62,7 +63,7 @@ export class AIChatClient {
    * @param {ChatCompletionMessageParam[]} messages - An array of chat messages to send to the AI.
    * @returns {Promise<ChatCompletion>} A promise that resolves to the chat completion response from the AI.
    */
-  public chat(messages: ChatCompletionMessageParam[]): Promise<ChatCompletion> {
+  public async chat(messages: ChatCompletionMessageParam[]): Promise<ChatCompletion> {
     const params: ChatCompletionCreateParams & { provider?: OpenRouterProviderPreferences } = {
       messages: messages,
       model: this.model,
@@ -70,7 +71,26 @@ export class AIChatClient {
       n: this.n,
       ...(this.openRouterProviderPreferences && { provider: this.openRouterProviderPreferences }),
     };
-    return this.openai.chat.completions.create(params);
+
+    if (AI_CHAT_CLIENT_RESPONSE_LOGGING) {
+      console.log('Chat Request Params:', params);
+
+      // Using .withResponse() to access both the raw Response and parsed data
+      const { data: chatCompletion, response: rawResponse } = await this.openai.chat.completions
+        .create(params)
+        .withResponse();
+
+      // Log raw response details
+      console.log('Raw Response Headers:', Array.from(rawResponse.headers.entries()));
+      console.log('Raw Response Status:', rawResponse.status, rawResponse.statusText);
+
+      // Log parsed response data
+      console.log('Parsed Response Data:', chatCompletion);
+
+      return chatCompletion;
+    } else {
+      return this.openai.chat.completions.create(params);
+    }
   }
 
   /**

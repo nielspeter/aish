@@ -4,6 +4,8 @@ export const MODEL_NAME = process.env.MODEL_NAME ?? 'qwen2.5-coder:32b'; // 'qwe
 export const MODEL_SERVICE_API_KEY = process.env.MODEL_SERVICE_API_KEY ?? 'not_needed'; // <lambdalabs api key>
 export const MODEL_SERVICE_URL = process.env.MODEL_SERVICE_URL ?? 'http://localhost:11434/v1'; // 'https://api.lambdalabs.com/v1';
 
+export const AI_CHAT_CLIENT_RESPONSE_LOGGING = process.env.AI_CHAT_CLIENT_LOGGING === 'false';
+
 export const SHELL_PROMPT = `export PS1="PROMPT> "\n`;
 export const COMMAND_END_MARKER = '__COMMAND_END__';
 
