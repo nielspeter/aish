@@ -77,6 +77,17 @@ The shell interface in AIsh allows you to execute shell commands as you normally
 
 AIsh is designed to be flexible and can integrate with any OpenAI-compatible provider. This allows you to choose the service that best fits your needs in terms of performance, cost, and available models. Here are some of the supported providers:
 
+### Ollama (recommended)
+- **Overview**: Ollama is a local LLM provider that allows you to run models directly on your machine, offering enhanced privacy and control. It seamlessly integrates with AIsh, enabling offline operations without relying on external servers.
+- **Pros**:
+   - **Privacy**: Since models run locally, your data remains on your machine, ensuring greater privacy and security.
+   - **Performance**: Fast response times with no dependency on internet connectivity, providing a smooth interactive experience.
+   - **Cost-Effective**: Eliminates ongoing API costs associated with cloud-based providers after the initial setup.
+- **Cons**:
+   - **Hardware Requirements**: Requires sufficient local resources (CPU, GPU, memory) to run large models effectively, which might be a barrier for some users.
+   - **Setup Complexity**: Initial setup can be more involved compared to cloud-based providers, requiring installation and configuration of local services.
+   - **Model Availability**: Limited to the models supported by Ollama, which may not offer the same variety as some cloud providers.
+
 ### Lambda Labs (recommended)
 - Overview: Lambda Labs offers a cost-effective and fast alternative for deploying OpenAI-compatible models.
 - **Pros**:
@@ -114,7 +125,7 @@ When selecting a provider for AIsh, consider the following factors:
 AIsh’s compatibility with multiple providers ensures that you can tailor your setup to your specific requirements, whether you prioritize cost, performance, or model diversity.
 
 ## Choice of Model
-AIsh primarily uses the `qwen2.5-coder:32b` model for its operations. This model excels at returning structured data and is exceptionally well-suited for the interactive shell environment that AIsh provides. Its ability to generate clear, organized responses ensures reliable and accurate command execution, making it the ideal choice for this application. Extensive testing and development of AIsh have been conducted using `qwen2.5-coder:32b`, underscoring its effectiveness and compatibility with the project's objectives.
+AIsh primarily uses the [Qwen2.5-Coder-32B-Instruct](https://qwenlm.github.io/blog/qwen2.5-coder-family/) model for its operations. This model excels at returning structured data and is exceptionally well-suited for the interactive shell environment that AIsh provides. Its ability to generate clear, organized responses ensures reliable and accurate command execution, making it the ideal choice for this application. Extensive testing and development of AIsh have been conducted using `Qwen2.5-Coder-32B-Instruct`, underscoring its effectiveness and compatibility with the project's objectives.
 
 ### History
 The LLM remembers the history of commands and interactions. This history is stored in a hidden file in the user's home directory called `.aish_messages.json`. This allows the LLM to maintain context and provide more accurate responses based on past interactions.
