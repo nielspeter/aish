@@ -30,7 +30,7 @@ describe('LatestInteractionTrimmingStrategy', () => {
   it('should not trim messages when total tokens are within the limit', () => {
     const chatHistory: ChatCompletionMessageParam[] = [
       createMessage('system', 'You are a helpful assistant.'), // 6 tokens
-      createMessage('user', 'Hello!'), // 2 token
+      createMessage('user', 'Hello!'), // 2 tokens
       createMessage('assistant', 'Hi there! How can I assist you today?'), // 9 tokens
       createMessage('user', 'Can you tell me a joke?'), // 7 tokens
       createMessage('assistant', 'Why did the scarecrow win an award? Because he was outstanding in his field!'), // 15 tokens
@@ -124,7 +124,7 @@ describe('LatestInteractionTrimmingStrategy', () => {
   it('should handle multiple trimmings with mixed message roles', () => {
     const chatHistory: ChatCompletionMessageParam[] = [
       createMessage('system', 'You are a helpful assistant.'), // 6 tokens
-      createMessage('user', 'Hi!'), // 2 token
+      createMessage('user', 'Hi!'), // 2 tokens
       createMessage('assistant', 'Hello! How can I help you today?'), // 8 tokens
       createMessage('user', 'I need information on climate change.'), // 7 tokens
       createMessage('assistant', 'Certainly! Climate change refers to...'), // 6 tokens
@@ -169,7 +169,7 @@ describe('LatestInteractionTrimmingStrategy', () => {
   it('should re-add the system prompt if it was removed during trimming', () => {
     const chatHistory: ChatCompletionMessageParam[] = [
       createMessage('system', 'You are a helpful assistant.'), // 6 tokens
-      createMessage('user', 'Hello!'), // 2 token
+      createMessage('user', 'Hello!'), // 2 tokens
       createMessage('assistant', 'Hi there!'), // 3 tokens
     ];
 
@@ -199,5 +199,98 @@ describe('LatestInteractionTrimmingStrategy', () => {
     const trimmedHistory = trimmingStrategy.trim(chatHistory, maxTokens);
 
     expect(trimmedHistory).toEqual(expectedTrimmedHistory);
+  });
+
+  it('should retain the original last user message and truly final assistant message when token limit is exceeded', () => {
+    const chatHistory: ChatCompletionMessageParam[] = [
+      createMessage('system', 'You are a helpful assistant.'), // 6 tokens
+      createMessage('user', 'Hello!'), // 2 tokens
+      createMessage('assistant', 'Hi there! How can I assist you today?'), // 9 tokens
+      createMessage('user', 'Can you help me solve a problem?'), // 8 tokens
+      createMessage('assistant', 'Of course! Could you tell me more about the problem?'), // 11 tokens
+      createMessage('user', 'Sure, I am trying to calculate the area of a circle.'), // 12 tokens
+      createMessage('assistant', 'The formula to calculate the area of a circle is A = πr². Do you know the radius?'), // 19 tokens
+      createMessage('user', 'Yes, the radius is 5.'), // 6 tokens
+      createMessage('assistant', 'Substituting the radius into the formula, A = π × (5)². This simplifies to A = 25π.'), // 18 tokens
+      createMessage('assistant', 'π ≈ 3.14, the area becomes A = 25 × 3.14, which equals 78.5 square units.'), // 17 tokens
+    ];
+
+    const maxTokens = 30;
+
+    const expectedTrimmedHistory: ChatCompletionMessageParam[] = [
+      createMessage('system', 'You are a helpful assistant.'), // 6 tokens
+      createMessage('user', 'Yes, the radius is 5.'), // 6 tokens
+      createMessage('assistant', 'π ≈ 3.14, the area becomes A = 25 × 3.14, which equals 78.5 square units.'), // 17 tokens
+    ];
+
+    const trimmedHistory = trimmingStrategy.trim(chatHistory, maxTokens);
+
+    expect(trimmedHistory).toEqual(expectedTrimmedHistory);
+  });
+
+  it('should remove just enough oldest non-system messages to fit within the token limit', () => {
+    const chatHistory: ChatCompletionMessageParam[] = [
+      createMessage('system', 'System prompt'), // 3 tokens
+      createMessage('user', 'One'), // 2 tokens
+      createMessage('assistant', 'Two'), // 2 tokens
+      createMessage('user', 'Three'), // 2 tokens
+      createMessage('assistant', 'Four'), // 2 tokens
+      createMessage('user', 'Five'), // 2 tokens
+      createMessage('assistant', 'Six'), // 2 tokens
+    ];
+
+    // That is a total of 3+2+2+2+2+2+2 = 15 tokens
+    // Let's set maxTokens = 11, so we need to remove 4 tokens worth of messages
+    const maxTokens = 11;
+
+    // We'll remove the oldest non-system message(s) until it fits:
+    // * Removing user "One" and assistant "Two" would reduce 4 tokens.
+    // * We'll keep the rest if it fits exactly.
+    const expectedTrimmed: ChatCompletionMessageParam[] = [
+      createMessage('system', 'System prompt'), // 3 tokens
+      createMessage('user', 'Three'), // 2 tokens
+      createMessage('assistant', 'Four'), // 2 tokens
+      createMessage('user', 'Five'), // 2 tokens
+      createMessage('assistant', 'Six'), // 2 tokens
+    ];
+
+    const trimmedHistory = trimmingStrategy.trim(chatHistory, maxTokens);
+    expect(trimmedHistory).toEqual(expectedTrimmed);
+  });
+
+  it('should retain the last user message if conversation ends with a user and no assistant follows', () => {
+    const chatHistory: ChatCompletionMessageParam[] = [
+      createMessage('system', 'System prompt.'), // 3 tokens
+      createMessage('user', 'User question 1'), // 4 tokens
+      createMessage('assistant', 'Assistant answer 1'), // 4 tokens
+      createMessage('user', 'User question 2 (final)'), // 5 tokens
+    ];
+
+    const maxTokens = 3; // Force trimming
+
+    // We want the system prompt, plus the final user. There's no final assistant to keep
+    const expectedTrimmed: ChatCompletionMessageParam[] = [
+      createMessage('system', 'System prompt.'),
+      createMessage('user', 'User question 2 (final)'),
+    ];
+
+    const trimmedHistory = trimmingStrategy.trim(chatHistory, maxTokens);
+    expect(trimmedHistory).toEqual(expectedTrimmed);
+  });
+
+  it('should handle multiple assistant messages without any user messages by retaining only the system prompt', () => {
+    const chatHistory: ChatCompletionMessageParam[] = [
+      createMessage('system', 'System prompt.'),
+      createMessage('assistant', 'Assistant 1'),
+      createMessage('assistant', 'Assistant 2'),
+    ];
+
+    const maxTokens = 2; // Force trimming
+
+    // Expect only system prompt because there's no user message to anchor an assistant message
+    const expectedTrimmed: ChatCompletionMessageParam[] = [createMessage('system', 'System prompt.')];
+
+    const trimmedHistory = trimmingStrategy.trim(chatHistory, maxTokens);
+    expect(trimmedHistory).toEqual(expectedTrimmed);
   });
 });

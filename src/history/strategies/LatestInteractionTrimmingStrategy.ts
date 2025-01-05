@@ -6,23 +6,38 @@ import { SYS_PROMPT, TOKEN_MODEL } from '../../utils/config.js';
 
 /**
  * A trimming strategy that ensures:
- * 1. The total tokens do not exceed the maximum allowed by removing oldest messages first.
- * 2. Retains the system prompt, the latest user message, and the assistant's response to that user message.
- * 3. If retaining only these three messages still exceeds maxTokens, it's acceptable.
+ * 1. The system prompt is always present.
+ * 2. The total tokens do not exceed the maximum allowed by removing oldest messages first (excluding system).
+ * 3. If trimming down to only three messages (system prompt, last user message, and the final assistant message) still exceeds `maxTokens`, it is returned anyway.
+ *
+ * This strategy specifically retains:
+ * - The system prompt,
+ * - The last user message in the conversation,
+ * - The final assistant message that appears after that user message (even if there are multiple assistant messages in a row).
  */
 export class LatestInteractionTrimmingStrategy implements TrimmingStrategy {
   /**
-   * Trims the provided chat messages to ensure the total token count does not exceed the maximum allowed.
+   * Trims an array of chat messages to keep the total token count within `maxTokens`.
    *
-   * @param {ChatCompletionMessageParam[]} messages - An array of chat messages to be trimmed.
+   * **Algorithm**:
+   *  1. Identify the last user message and the truly last assistant message after it **before** any splicing.
+   *  2. Try removing the oldest messages (excluding the system prompt) until we fit in `maxTokens` or have just 3 messages left.
+   *  3. If we still exceed `maxTokens`, discard everything except:
+   *     - The system prompt,
+   *     - The **original** last user message,
+   *     - The **original** last assistant message after that user.
+   *
+   * @param {ChatCompletionMessageParam[]} messages - The array of messages to trim.
    * @param {number} maxTokens - The maximum allowed number of tokens for the chat history.
-   * @returns {ChatCompletionMessageParam[]} A new array of trimmed chat messages.
+   * @returns {ChatCompletionMessageParam[]} A **new** array of trimmed messages.
+   * @throws Will throw an error if the system prompt is missing from the original message array.
    */
   trim(messages: ChatCompletionMessageParam[], maxTokens: number): ChatCompletionMessageParam[] {
-    const messagesCopy = [...messages]; // Clone the array
+    // Clone the original array for safe splicing
+    const messagesCopy = [...messages];
 
-    if (!messagesCopy || messagesCopy.length === 0) {
-      // If no messages are provided, initialize with the system prompt.
+    // If no messages are provided, return just the system prompt.
+    if (messagesCopy.length === 0) {
       return [
         {
           role: 'system',
@@ -31,92 +46,108 @@ export class LatestInteractionTrimmingStrategy implements TrimmingStrategy {
       ];
     }
 
-    // Ensure that the first message is the system prompt.
+    // Check if the system prompt is present.
     const systemPromptIndex = messagesCopy.findIndex((msg) => msg.role === 'system');
     if (systemPromptIndex === -1) {
       throw new Error('System prompt is missing in the provided messages.');
     }
 
+    // ---- STEP 1: Identify the truly last user and last assistant AFTER that user (in the original array).
+    const originalLastUserIndex = messages
+      .map((msg, idx) => ({ msg, idx }))
+      .filter(({ msg }) => msg.role === 'user')
+      .map(({ idx }) => idx)
+      .pop();
+
+    // For the last assistant, find the highest index that is > originalLastUserIndex
+    let originalLastAssistantIndex: number | undefined = undefined;
+    if (originalLastUserIndex !== undefined) {
+      originalLastAssistantIndex = messages
+        .map((msg, idx) => ({ msg, idx }))
+        .filter(({ msg, idx }) => msg.role === 'assistant' && idx > originalLastUserIndex)
+        .map(({ idx }) => idx)
+        .pop();
+    }
+
+    // We'll need these references in case we must do the final fallback in step 3.
+
+    // ---- STEP 2: Attempt to trim within maxTokens by removing oldest non-system messages.
+
+    // Create an encoder and compute total tokens.
     const encoding = encoding_for_model(TOKEN_MODEL);
     let totalTokens = this.calculateTokenCount(messagesCopy, encoding);
 
-    // If total tokens are within the limit, return all messages.
+    // If total tokens are within `maxTokens`, we are done.
     if (totalTokens <= maxTokens) {
       encoding.free();
       return messagesCopy;
     }
 
-    // 1. Trim messages by removing oldest non-system messages until:
-    //    a) totalTokens <= maxTokens, or
-    //    b) only system prompt, latest user, and assistant response remain.
+    // Remove messages from the start (excluding system) until we're <= maxTokens,
+    // or we have only 3 messages left (we want to preserve system, user, assistant).
     while (totalTokens > maxTokens && messagesCopy.length > 3) {
-      // Remove the oldest message after the system prompt.
+      // Remove the oldest message that isn't the system prompt.
       const removeIndex = systemPromptIndex === 0 ? 1 : 0;
       messagesCopy.splice(removeIndex, 1);
+
+      // Recalculate token count.
       totalTokens = this.calculateTokenCount(messagesCopy, encoding);
     }
 
-    // After trimming, check if trimming was necessary
-    // If trimming was not necessary (i.e., all messages are already within limit), return all messages
-    // Else, retain only system prompt, latest user message, and assistant response
+    // If at this point we fit within maxTokens, return the trimmed array as is.
     if (totalTokens <= maxTokens) {
       encoding.free();
       return messagesCopy;
     }
 
-    // 2. Retain only the system prompt, the latest user message, and its assistant response (if any).
+    // ---- STEP 3: We still exceed maxTokens.
+    // Keep only system prompt, the original last user, and the original last assistant after that user.
+    // We'll reconstruct from the original `messages` array to ensure we didn't accidentally remove them.
+
     const finalMessages: ChatCompletionMessageParam[] = [];
 
-    // Always include the system prompt.
-    const systemPrompt = messagesCopy.find((msg) => msg.role === 'system');
+    // Always keep the system prompt
+    const systemPrompt = messages.find((m) => m.role === 'system');
     if (systemPrompt) {
       finalMessages.push(systemPrompt);
     } else {
-      // If the system prompt was somehow removed, re-add it.
+      // If it somehow doesn't exist, re-add from config
       finalMessages.push({
         role: 'system',
         content: SYS_PROMPT,
       });
     }
 
-    // Find the index of the last user message.
-    const lastUserMessageIndex = messagesCopy
-      .map((msg, idx) => ({ msg, idx }))
-      .filter(({ msg }) => msg.role === 'user')
-      .map(({ idx }) => idx)
-      .pop();
-
-    if (lastUserMessageIndex !== undefined) {
-      // Add the latest user message.
-      const latestUserMessage = messagesCopy[lastUserMessageIndex];
-      finalMessages.push(latestUserMessage);
-
-      // Check if there's an assistant response immediately following the latest user message.
-      const maybeAssistant = messagesCopy[lastUserMessageIndex + 1];
-      if (maybeAssistant && maybeAssistant.role === 'assistant') {
-        finalMessages.push(maybeAssistant);
-      }
+    // Add the original last user message, if it exists
+    if (originalLastUserIndex !== undefined) {
+      finalMessages.push(messages[originalLastUserIndex]);
     }
 
-    // Always free the encoding instance
+    // Add the original last assistant message, if it exists
+    if (originalLastAssistantIndex !== undefined) {
+      finalMessages.push(messages[originalLastAssistantIndex]);
+    }
+
+    // Clean up the encoder
     encoding.free();
 
     return finalMessages;
   }
 
   /**
-   * Calculates the total number of tokens in the provided chat messages.
+   * Calculates the total number of tokens for a given array of messages.
+   * We serialize messages by prefixing each with `<|role|>` before the content, then measure the token length.
    *
    * @private
-   * @param {ChatCompletionMessageParam[]} messages - An array of chat messages.
-   * @param {ReturnType<typeof encoding_for_model>} encoding - The encoding instance used for tokenization.
-   * @returns {number} The total number of tokens in the chat messages.
+   * @param {ChatCompletionMessageParam[]} messages - The array of chat messages to measure.
+   * @param {ReturnType<typeof encoding_for_model>} encoding - The encoder instance used for tokenization.
+   * @returns {number} The total count of tokens in the provided messages.
    */
   private calculateTokenCount(
     messages: ChatCompletionMessageParam[],
     encoding: ReturnType<typeof encoding_for_model>
   ): number {
-    // Serialize the conversation in a format suitable for token counting.
+    // Simple serialization approach: prefix role tags and join.
     const serialized = messages.map((msg) => `<|${msg.role}|> ${msg.content}`).join('\n');
     return encoding.encode(serialized).length;
   }
