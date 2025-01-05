@@ -5,13 +5,12 @@
 ## Introduction
 **AIsh** is an experimental project that explores the potential of combining the power of Large Language Models (LLMs) with the versatility of a shell environment. This is not a finished product—it's a proof of concept for developers curious about what happens when you give an AI direct access to a runtime environment.
 
-If you've ever found yourself copying and pasting code between your editor and tools like ChatGPT or Copilot, only to debug syntax errors manually, AIsh is here to rethink that workflow. Why shouldn't the AI run the code, debug it, and iterate on it directly? AIsh takes this idea and runs with it, offering a unique blend of automation, iteration, and collaboration between developers and AI.
+If you've ever found yourself copying and pasting code between your editor and tools like ChatGPT or Copilot, only to debug syntax errors manually, AIsh is here to rethink that workflow. Why shouldn't the AI run the code, debug it, and iterate on it directly? AIsh takes this idea and runs with it, offering a unique blend of automation, iteration, and collaboration between users and AI.
 
 ## How It Works
 AIsh creates an interactive shell environment where an LLM can:
 - Execute shell commands.
 - Install necessary tools.
-- Run and test code autonomously.
 - Retrieve and interact with real-time data from APIs and the internet.
 - Collaborate with the user, blending AI-driven automation with human guidance.
 
@@ -26,7 +25,7 @@ The result is a seamless workflow where you and the AI work together, each playi
 ## Example Scenarios
 
 ### Simple Automation
-Ask AIsh to perform tasks like counting words in a file, generating project scaffolding, or fetching the weather. It will dynamically determine the necessary tools, install them if missing, and execute the task.
+Ask AIsh to perform tasks like generating project scaffolding, or fetching data from a database. It will dynamically determine the necessary tools, install them if missing, and execute the task.
 
 ### Coding Assistance
 
@@ -73,6 +72,49 @@ The shell interface in AIsh allows you to execute shell commands as you normally
 ### Command Execution
 - **Standard Shell Commands**: Execute commands directly in the shell.
 - **LLM Commands**: Prefix commands with `/` to send them to the LLM.
+
+## OpenAI Compatible Providers
+
+AIsh is designed to be flexible and can integrate with any OpenAI-compatible provider. This allows you to choose the service that best fits your needs in terms of performance, cost, and available models. Here are some of the supported providers:
+
+### Lambda Labs (recommended)
+- Overview: Lambda Labs offers a cost-effective and fast alternative for deploying OpenAI-compatible models.
+- **Pros**:
+   - Affordable: Lower cost compared to other providers, making it suitable for budget-conscious projects.
+   - Performance: Fast response times, ensuring a smooth interactive experience.
+- **Cons**:
+   - Limited model variety compared to some other providers.
+   - May have fewer advanced features or customization options.
+
+### OpenRouter
+- Overview: OpenRouter provides access to a wide array of models, aiming to offer flexibility and comprehensive model support.
+- **Pros**:
+  - Diverse Models: Access to a broad selection of models, catering to various use cases.
+  - Flexibility: Ability to switch between models seamlessly.
+- **Cons**:
+  - Stability Issues: Users have reported occasional problems, which might affect reliability.
+  - Support: May have less robust support compared to established providers like OpenAI.
+
+### ChatGPT
+- Overview: Developed by OpenAI, ChatGPT is renowned for its conversational abilities and wide range of supported models.
+- **Pros**:
+   - High-quality, reliable responses.
+   - Extensive model options with varying capabilities.
+- **Cons**:
+   - Can be expensive, especially for extensive usage.
+   - Rate limits may apply depending on your subscription plan.
+
+### Choosing the Right Provider
+When selecting a provider for AIsh, consider the following factors:
+- Cost: Evaluate your budget and choose a provider that offers the best balance between cost and performance.
+- Performance: Ensure the provider can handle your workload with minimal latency.
+- Model Availability: Select a provider that offers the specific models you need for your tasks.
+- Reliability: Opt for providers with a track record of stability and strong support.
+
+AIsh’s compatibility with multiple providers ensures that you can tailor your setup to your specific requirements, whether you prioritize cost, performance, or model diversity.
+
+## Choice of Model
+AIsh primarily uses the `qwen2.5-coder:32b` model for its operations. This model excels at returning structured data and is exceptionally well-suited for the interactive shell environment that AIsh provides. Its ability to generate clear, organized responses ensures reliable and accurate command execution, making it the ideal choice for this application. Extensive testing and development of AIsh have been conducted using `qwen2.5-coder:32b`, underscoring its effectiveness and compatibility with the project's objectives.
 
 ### History
 The LLM remembers the history of commands and interactions. This history is stored in a hidden file in the user's home directory called `.aish_messages.json`. This allows the LLM to maintain context and provide more accurate responses based on past interactions.
@@ -124,8 +166,14 @@ The application supports two model clients: Ollama (local) and Lambda Lab API (r
 
 #### Lambda Lab API (Remote)
 - **MODEL_SERVICE_URL**: Set to `https://api.lambdalabs.com/v1`.
-- **MODEL_NAME**: Set to `qwen25-coder-32b-instruct` for best results or `lfm-40b`.
+- **MODEL_NAME**: Set to `qwen25-coder-32b-instruct` for best results.
 - **MODEL_SERVICE_API_KEY**: Set to your Lambda Lab API key.
+
+#### OpenAI-Compatible Providers (Remote)
+To use providers like ChatGPT, Lambda Labs, or OpenRouter, configure the following environment variables accordingly:
+- **MODEL_SERVICE_URL**: Set to the provider’s API endpoint.
+- **MODEL_NAME**: Specify the desired model available from the provider.
+- **MODEL_SERVICE_API_KEY**: Provide your API key for authentication.
 
 ### Installing Ollama
 To use a local LLM with Ollama, you need to install Ollama. You can install it either from the [Ollama website](https://ollama.com/) or using Homebrew.
